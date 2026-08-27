@@ -89,6 +89,8 @@ Approved on 2026-08-27. Refinements: use a static implementation with no externa
 - Corrected the browser test selector to target the Creative filter button explicitly because the word also appears as an event label.
 - Began a reversible glassmorphism visual experiment by adding `glassmorphism-experiment.css`; removing its stylesheet link restores the previous look without changing application logic.
 - Reverted the glassmorphism experiment on request because it reduced the desired warmth; restored the original stylesheet links on all pages.
+- Created the first local Git commit `26a1d9c` (`Create Gatherly working baseline`) using the student's supplied Git identity.
+- GitHub connection is waiting for browser sign-in before repository creation/push.
 
 ## Test evidence
 
