@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Explore fictional Gatherly events by search and category."><title>Explore events | Gatherly</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">✦</span> Gatherly</a><nav class="main-nav" aria-label="Main navigation"><a class="active" href="explore.html">Explore</a><a href="saved.html">Saved <span class="saved-count">0</span></a><a class="button button-small" href="explore.html">Find an event</a></nav></header>
+  <main class="shell page-main">
+    <div class="page-intro"><p class="eyebrow">Your next chapter</p><h1>Explore events</h1><p>Filter the list until something makes you want to change your calendar.</p></div>
+    <section class="controls" aria-label="Event filters"><label class="search-box"><span aria-hidden="true">⌕</span><span class="sr-only">Search events</span><input type="search" placeholder="Search by event, place, or topic" data-search></label><div class="filter-row"><button class="filter-chip active" data-category="All">All events</button><button class="filter-chip" data-category="Creative">Creative</button><button class="filter-chip" data-category="Wellness">Wellness</button><button class="filter-chip" data-category="Community">Community</button><button class="filter-chip" data-category="Online">Online</button></div></section>
+    <div class="results-bar"><span data-results-count></span><span class="muted">All times shown in your local time</span></div>
+    <div class="event-list" data-event-list></div>
+    <p class="empty-state" data-empty-state hidden>No events match that search yet. Try another word or category.</p>
+  </main>
+  <footer class="site-footer shell"><span>© 2026 Gatherly</span><span>Fictional events for a working baseline.</span></footer><script src="app.js"></script>
+</body>
+</html>
