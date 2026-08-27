@@ -91,6 +91,8 @@ Approved on 2026-08-27. Refinements: use a static implementation with no externa
 - Reverted the glassmorphism experiment on request because it reduced the desired warmth; restored the original stylesheet links on all pages.
 - Created the first local Git commit `26a1d9c` (`Create Gatherly working baseline`) using the student's supplied Git identity.
 - GitHub connection is waiting for browser sign-in before repository creation/push.
+- Created the GitHub repository at `https://github.com/MahinaYasutake/CGT390_Project` and pushed commits `26a1d9c` and `4ada29f`.
+- Deployed the `event-discovery-app` subfolder to Vercel at `https://cgt-390-project-seven.vercel.app`.
 
 ## Test evidence
 
@@ -110,7 +112,15 @@ Tested 2026-08-27 using the local server at `http://localhost:4173/`:
 
 ### Deployed testing
 
-Pending GitHub/Vercel deployment.
+Tested 2026-08-27 at `https://cgt-390-project-seven.vercel.app`:
+
+- Live home page loaded with the Gatherly heading: passed.
+- Explore navigation opened successfully: passed.
+- Explore initially displayed 6 events: passed.
+- Searching for `clay` reduced results to 1 event: passed.
+- Clay Club opened on the live Event Details page: passed.
+- Save action changed to `♥ Saved` on the live page: passed.
+- Live browser console error check returned 0 errors: passed.
 
 ## Missing, simulated, broken, or uncertain
 
@@ -121,4 +131,4 @@ Pending GitHub/Vercel deployment.
 
 ## Reflection draft
 
-Pending completion after implementation and testing. The final reflection will be 3–5 sentences covering what AI handled successfully, what required human direction or correction, and one remaining limitation.
+AI handled the initial page structure, fictional sample content, shared event rendering, and the search/filter/save interactions successfully. Human direction was needed to keep the scope limited, require original styling, choose browser-local storage instead of accounts, and reject the glassmorphism experiment when it did not feel warm enough. The baseline is deployed and working, but saved events are only stored in the current browser and there is no real registration, account, or server-side event data yet.
