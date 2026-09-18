@@ -108,9 +108,9 @@ Later measurement plan:
 
 ## AI-use statement
 
-AI supported this lab as a research, writing, and implementation assistant. It helped identify audit evidence in the existing Gatherly files, organize the findings, suggest clearer metadata and structured-data improvements, update the Explore page, and check the deployed page after the changes were published. It also helped organize the evidence and validation results into this report.
+I, the human designer, chose the Explore Events page, collected the page and project data, reviewed the suggested findings, and selected the two improvements used in this audit. After the updates were deployed, I reviewed the live page, confirmed that the changes fit the page content and user task, and tested the search behavior.
 
-Human direction remained responsible for the important decisions. I selected Gatherly as the case-study prototype, chose the Explore Events page, defined the intended user and likely search query, and decided which user task the audit should prioritize. I reviewed the suggested changes and limited the implementation to two improvements that fit the page: clearer search intent and stronger page identity. I also chose to keep the event data fictional, avoided claiming real availability or rankings, and rejected unsupported SEO additions. After implementation, I reviewed the deployed page, confirmed that the title, H1, metadata, canonical URL, and structured data matched the visible content, and tested the event search behavior. The AI helped carry out and document these steps, but the scope, judgment, fact-checking, and final decisions remained human-directed.
+AI handled the time-consuming production work. It helped build and update the website, add the revised page title, description, H1, canonical URL, and structured data, check the deployed page, and write this document from the draft and direction I provided. AI also helped organize the evidence, findings, validation results, and presentation summary into a finished submission.
 
 ## Brief presentation summary
 
