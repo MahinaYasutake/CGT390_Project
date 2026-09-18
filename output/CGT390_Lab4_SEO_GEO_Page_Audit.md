@@ -21,6 +21,15 @@ This page helps **people looking for a beginner-friendly activity** when they se
 | Evidence and data | The page includes a canonical URL and a CollectionPage JSON-LD block whose name, description, and URL match the visible page. The data is limited to facts actually represented on the page. | Search systems receive a consistent page identity and content summary without unsupported event or review claims. |
 | Generated use | A focused answer can correctly identify the two Creative events, their dates, locations, prices, and beginner-friendly language from the page. The page also states that saved events are only stored in the browser and that saving does not reserve a spot. | The page is usable as a source for basic event facts, but it does not provide real availability, registration, or city context. |
 
+## Part 4 Two questions to answer
+
+The audit uses two focused questions instead of assigning one general SEO score:
+
+1. **Can a searcher and search system understand that this page is a collection of creative workshops and local events?**
+2. **Can a search or generative system identify the page as the authoritative source for the event facts shown to the user?**
+
+The first question is answered through the title, meta description, H1, opening content, and visible event categories. The second is answered through the canonical URL, CollectionPage structured data, consistent visible facts, and the linked event-detail pages.
+
 ## Findings and evidence-to-verification records
 
 ### Finding 1 Search intent was too vague in metadata and headings
@@ -47,7 +56,7 @@ This page helps **people looking for a beginner-friendly activity** when they se
 - **Verification:** Immediate inspection confirms the cards and detail links expose the comparison facts and that the save limitation is stated.
 - **Limitation:** Real availability and registration accuracy require a connected event source and repeated data checks.
 
-## Generated-answer check
+## Part 5 Generated-answer check
 
 **Focused question asked of the AI system:** “According to Gatherly’s Explore Events page, what beginner-friendly creative events can a user consider, and what are the date, location, and price of each?”
 
@@ -60,7 +69,14 @@ This page helps **people looking for a beginner-friendly activity** when they se
 
 Missing context: the prototype does not identify a real city, does not provide verified capacity or registration, and uses fictional event data. The page does state that the events are fictional and that saving does not reserve a spot. One change that would make the information easier to use is adding a clear city or region field to each event once the prototype has a defined geographic scope.
 
-## Prototype implementation and before-and-after evidence
+## Part 6 Priorities and Part 7 Prototype implementation
+
+The two highest-priority improvements were selected because they support both the user’s discovery task and the likely search need:
+
+1. Make the page’s search intent explicit in the title, meta description, H1, and opening copy.
+2. Give the page a consistent machine-readable identity with a canonical URL and accurate CollectionPage structured data.
+
+## Before-and-after evidence
 
 **Updated prototype:** https://cgt-390-project-seven.vercel.app/explore.html
 
