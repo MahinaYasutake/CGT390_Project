@@ -108,7 +108,7 @@ Later measurement plan:
 
 ## AI-use statement
 
-I, the human designer, chose the Explore Events page, collected the page and project data, reviewed the suggested findings, and selected the two improvements used in this audit. After the updates were deployed, I reviewed the live page, confirmed that the changes fit the page content and user task, and tested the search behavior.
+Human decisions were used to choose the Explore Events page, collect the page and project data, review the suggested findings, and select the two improvements used in this audit. After the updates were deployed, the live page was reviewed to confirm that the changes fit the page content and user task, and the search behavior was tested.
 
 AI handled the time-consuming production work. It helped build and update the website, add the revised page title, description, H1, canonical URL, and structured data, check the deployed page, and write this document from the draft and direction I provided. AI also helped organize the evidence, findings, validation results, and presentation summary into a finished submission.
 
