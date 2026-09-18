@@ -108,7 +108,9 @@ Later measurement plan:
 
 ## AI-use statement
 
-AI assisted with identifying audit evidence, drafting the findings, proposing metadata and structured-data improvements, editing the Explore page, checking the deployed page, and organizing this report. Human direction defined the Gatherly scope, selected the Explore page and likely query, kept the events fictional, and reviewed the recommendations and implementation.
+AI supported this lab as a research, writing, and implementation assistant. It helped identify audit evidence in the existing Gatherly files, organize the findings, suggest clearer metadata and structured-data improvements, update the Explore page, and check the deployed page after the changes were published. It also helped organize the evidence and validation results into this report.
+
+Human direction remained responsible for the important decisions. I selected Gatherly as the case-study prototype, chose the Explore Events page, defined the intended user and likely search query, and decided which user task the audit should prioritize. I reviewed the suggested changes and limited the implementation to two improvements that fit the page: clearer search intent and stronger page identity. I also chose to keep the event data fictional, avoided claiming real availability or rankings, and rejected unsupported SEO additions. After implementation, I reviewed the deployed page, confirmed that the title, H1, metadata, canonical URL, and structured data matched the visible content, and tested the event search behavior. The AI helped carry out and document these steps, but the scope, judgment, fact-checking, and final decisions remained human-directed.
 
 ## Brief presentation summary
 
