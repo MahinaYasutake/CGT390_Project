@@ -12,6 +12,11 @@ const getSaved = () => JSON.parse(localStorage.getItem(savedKey) || '[]');
 const isSaved = id => getSaved().includes(id);
 const setSaved = ids => localStorage.setItem(savedKey, JSON.stringify(ids));
 const eventById = id => events.find(event => event.id === id);
+const trackGAEvent = (name, params = {}) => {
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', name, params);
+  }
+};
 
 function eventCard(event) {
   return `<article class="event-card"><a href="event.html?id=${event.id}" class="event-image ${event.color}"><span>${event.date.split(' · ')[0]}</span><span>${event.tag}</span></a><div class="event-info"><p class="category">${event.category}</p><h3><a href="event.html?id=${event.id}">${event.title}</a></h3><p class="event-meta"><strong>${event.date.split(' · ')[1]}</strong></p><p class="event-meta">${event.location}</p><div class="card-footer"><span class="muted">${event.price}</span><button class="save-button ${isSaved(event.id) ? 'saved' : ''}" data-save="${event.id}" aria-label="${isSaved(event.id) ? 'Remove' : 'Save'} ${event.title}">${isSaved(event.id) ? '♥' : '♡'}</button></div></div></article>`;
@@ -55,6 +60,19 @@ function renderDetail() {
   target.innerHTML = `<a class="detail-back" href="explore.html">← Back to explore</a><div class="detail-layout"><div class="detail-image ${event.color}"><span>${event.category} · ${event.tag}</span><strong>${event.title.split(':')[0]}</strong></div><div class="detail-copy"><p class="eyebrow">${event.category}</p><h1>${event.title}</h1><p>${event.description}</p><div class="detail-facts"><p class="detail-fact"><strong>When</strong><span>${event.date}</span></p><p class="detail-fact"><strong>Where</strong><span>${event.location}</span></p><p class="detail-fact"><strong>Hosted by</strong><span>${event.organizer}</span></p></div><section class="before-you-go" aria-labelledby="before-you-go-title"><p class="eyebrow" id="before-you-go-title">Before you go</p><div class="practical-grid"><p><strong>Duration</strong><span>${event.duration}</span></p><p><strong>Good for</strong><span>${event.audience}</span></p><p><strong>Materials</strong><span>${event.materials}</span></p><p><strong>Attendance</strong><span>${event.attendance}</span></p></div></section><div class="detail-actions"><button class="button" data-save="${event.id}" aria-describedby="save-note">${isSaved(event.id) ? '♥ Saved' : '♡ Save event'}</button><span class="muted">${event.price}</span></div><p class="save-note" id="save-note">Save this event to your shortlist. Saving does not reserve a spot.</p></div></div>`;
 }
 function renderSaved() { const target = document.querySelector('[data-saved-events]'); if (!target) return; const saved = events.filter(event => getSaved().includes(event.id)); target.innerHTML = saved.map(eventCard).join(''); document.querySelector('[data-saved-empty]').hidden = saved.length > 0; }
-document.addEventListener('click', event => { const button = event.target.closest('[data-save]'); if (!button) return; const id = button.dataset.save; const saved = getSaved(); setSaved(saved.includes(id) ? saved.filter(item => item !== id) : [...saved, id]); updateSavedCount(); renderFeatured(); renderSaved(); renderExplore(); renderDetail(); });
+document.addEventListener('click', event => {
+  const button = event.target.closest('[data-save]'); if (!button) return;
+  const id = button.dataset.save;
+  const selectedEvent = eventById(id);
+  const saved = getSaved();
+  const wasSaved = saved.includes(id);
+  setSaved(wasSaved ? saved.filter(item => item !== id) : [...saved, id]);
+  trackGAEvent(wasSaved ? 'event_unsaved' : 'event_saved', {
+    event_id: id,
+    event_title: selectedEvent?.title || id,
+    event_category: selectedEvent?.category || 'Unknown'
+  });
+  updateSavedCount(); renderFeatured(); renderSaved(); renderExplore(); renderDetail();
+});
 document.querySelector('[data-newsletter-form]')?.addEventListener('submit', event => { event.preventDefault(); event.target.querySelector('.form-message').textContent = 'You’re on the list—see you next week.'; event.target.reset(); });
 updateSavedCount(); renderFeatured(); renderExplore(); renderDetail(); renderSaved();
