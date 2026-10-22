@@ -1,72 +1,92 @@
 from pathlib import Path
 from xml.sax.saxutils import escape
 import os
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, KeepTogether
+
+from reportlab.lib.colors import black
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib.colors import black
+from reportlab.platypus import Paragraph, SimpleDocTemplate
 
-ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'output/lab9/Mahina_CGT390_Lab9_API_and_Data_Design_Report.pdf'
-OUT.parent.mkdir(parents=True,exist_ok=True)
-fonts=Path(os.environ.get('TIMES_NEW_ROMAN_DIR','/System/Library/Fonts/Supplemental'))
-for name,file in [('TNR','Times New Roman.ttf'),('TNRB','Times New Roman Bold.ttf')]:
-    pdfmetrics.registerFont(TTFont(name,str(fonts/file)))
-pdfmetrics.registerFontFamily('TNR',normal='TNR',bold='TNRB')
-body=ParagraphStyle('Body',fontName='TNR',fontSize=12,leading=24,textColor=black,spaceAfter=8)
-title=ParagraphStyle('Title',parent=body,fontName='TNRB',fontSize=16,leading=20,spaceAfter=12,keepWithNext=True)
-heading=ParagraphStyle('Heading',parent=body,fontName='TNRB',fontSize=14,leading=18,spaceBefore=14,spaceAfter=8,keepWithNext=True)
-subhead=ParagraphStyle('Subhead',parent=heading,fontSize=13,leading=16,spaceBefore=8,spaceAfter=4)
-story=[]
-def p(t): story.append(Paragraph(t,body))
-def t(t): story.append(Paragraph(t,title))
-def h(t): story.append(Paragraph(t,heading))
-def sh(t): story.append(Paragraph(t,subhead))
-def link(url,label): return f'<a href="{escape(url)}" color="#000000">{escape(label)}</a>'
-def footer(c,doc):
-    c.setFillColor(black);c.setFont('TNR',12)
-    c.drawString(54,31,'CGT 390 Lab 9')
-    c.drawRightString(558,31,f'Page {doc.page}')
-repo='https://github.com/MahinaYasutake/CGT390_Project'
-commit='https://github.com/MahinaYasutake/CGT390_Project/commit/0a6d62a925740f38b0d83e428dec8be57fbffa33'
-logs=repo+'/tree/master/output/lab9'
-code=repo+'/blob/master/event-discovery-app/app.js'
-t('CGT 390 Lab 9 API and Data Design Report')
-p('Mahina Yasutake | Gatherly | October 22, 2026')
-p('<b>Live prototype:</b> '+link('https://cgt-390-project-seven.vercel.app/','cgt-390-project-seven.vercel.app'))
-p('<b>Repository:</b> '+link(repo,'github.com/MahinaYasutake/CGT390_Project'))
-h('1. Interaction and contract')
-p('The interaction is saving Clay Club to a shortlist and removing it later. Gatherly is a static prototype. Saving has no API endpoint, Server Function, account, or database.')
-sh('Entry point')
-p('A button with data-save="clay-club" calls the click handler in '+link(code+'#L115','app.js, lines 115-130')+'. The handler calls toggleSaved(id), writes a list of IDs to localStorage, then updates the interface. On reload, getSaved() reads the same key. These are browser functions.')
-sh('Annotated flow')
-p('Event Details button → toggleSaved(event ID) → validate ID against the six-event catalog → localStorage key gatherly-saved-events → Saved Events view. The event array supplies public event details; the saved list contains only references to them.')
-sh('Contract')
-p('Input: a string ID for an existing event. Rule: each ID must exist in the catalog and appear once in the saved list. A second click removes it. Success returns ok:true, the normalized IDs, the selected ID, and saved:true or false. Invalid input or a failed storage write returns ok:false with an error. No save HTTP status exists.')
-h('2. Data and access decisions')
-p('The event ID links a saved-list entry to a fictional catalog record. The JavaScript event array is the catalog source of truth; localStorage is the shortlist store for one browser profile and origin. It is not an account record. The list is limited to valid, unique event IDs; malformed stored data displays as empty until a later valid write.')
-p('All event details are public in app.js. The shortlist stores no email, token, or payment field. Anonymous visitors may save; anyone using the same browser profile and origin can use that shortlist. Different origins have separate storage, but there is no user authorization or server validation. Lab 8 account-backed saves and database constraints remain a proposal.')
-h('3. Testing evidence')
-p('Tests used fictional records in isolated Chrome browser contexts on October 22. Identity for each case was an anonymous visitor. Results are function returns, page behavior, and raw localStorage values; save has no separate HTTP response. The complete predicted and actual results are in '+link(logs,'the before and after test logs')+'.')
-sh('T1 Successful action')
-p('<b>Input and prediction:</b> Save clay-club, reload, then remove and reload. Expect one saved event followed by none. <b>Actual:</b> storage was ["clay-club"] with one saved card, then [] with zero cards. Reload confirmed both writes persisted. Passed before and after the repair.')
-sh('T2 Invalid input')
-p('<b>Input and prediction:</b> Change data-save to not-real and an empty ID; expect rejection without a write. <b>Actual before:</b> storage became ["not-real",""]. <b>After:</b> storage stayed null and the page returned “This event is not available to save.” Validation in toggleSaved explains the change; retest passed.')
-sh('T3 Access boundary')
-p('<b>Input and prediction:</b> Save at port 4189, visit the same app at port 4191, then return. Expect the second origin empty and the first unchanged. <b>Actual:</b> the second origin had no saved card; the first retained ["clay-club"]. Passed. This checks origin separation, not account ownership.')
-sh('T8 Task specific edge case')
-p('<b>Input and prediction:</b> Open event.html?id=not-real. Expect “Event not found,” no Save button, and unchanged storage. <b>Actual before:</b> the page substituted Night Market. <b>After:</b> it showed “Event not found,” no Save button, and storage remained null. The static page request returned HTTP 200; the application displayed the missing-record result.')
-h('4. Findings and response')
-p('The baseline passed 2 of 8 checks. The six failing cases involved invalid IDs, malformed or wrongly shaped storage, duplicates, storage write failure, and unknown detail links. I added ID and list validation, safe parsing, duplicate removal, visible write-failure feedback, and a missing-event state in '+link(commit,'commit 0a6d62a')+'. All eight affected and unaffected checks passed after repair, plus a direct function validation check.')
-p('Selected evidence: invalid IDs changed storage from ["not-real",""] before repair to null after repair; a malformed value {broken caused a page error before repair but rendered with count 0 after repair. Successful saves were checked after reload; rejected writes were checked for unchanged storage. '+link(logs,'Full logs and selected screenshots')+' record the remaining cases.')
-p('The merged prototype also restores the documented Lab 7 mobile and deferred analytics behavior. Eleven local responsive and analytics checks and three live task flows passed. The Lab 6 accessibility repairs were verified in the live prototype, including result announcements and the Save button state.')
-p('Remaining limits: no account authorization, database persistence, reservation, or concurrent-write protection. External analytics delivery was not tested. These are outside the current browser-local contract.')
-h('5. Peer review and AI use')
-sh('Peer review')
-p('Pending. No classmate has yet proposed and run an additional case, so there is no peer result to report. Share the contract above and ask a classmate to choose a new case, such as two tabs changing the shortlist. Record their input, prediction, actual result, and any repair or blocker before submission.')
-sh('AI use')
-p('ChatGPT/Codex reviewed the code, built and ran the tests, implemented repairs, and drafted this report. The claims above were checked against the code, browser results, and stored values. I reviewed the document, decided on which action to investigate, and drafted parts of this report.')
-doc=SimpleDocTemplate(str(OUT),pagesize=(612,792),leftMargin=54,rightMargin=54,topMargin=45,bottomMargin=54,title='CGT 390 Lab 9 API and Data Design Report',author='Mahina Yasutake')
-doc.build(story,onFirstPage=footer,onLaterPages=footer)
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / 'output/lab9/Mahina_CGT390_Lab9_API_and_Data_Design_Report.pdf'
+fonts = Path(os.environ.get('TIMES_NEW_ROMAN_DIR', '/System/Library/Fonts/Supplemental'))
+for name, filename in [('TNR', 'Times New Roman.ttf'), ('TNRB', 'Times New Roman Bold.ttf')]:
+    pdfmetrics.registerFont(TTFont(name, str(fonts / filename)))
+pdfmetrics.registerFontFamily('TNR', normal='TNR', bold='TNRB')
+body = ParagraphStyle('Body', fontName='TNR', fontSize=12, leading=24, textColor=black, spaceAfter=3)
+title = ParagraphStyle('Title', parent=body, fontName='TNRB', fontSize=16, leading=20, spaceAfter=10)
+heading = ParagraphStyle('Heading', parent=body, fontName='TNRB', fontSize=14, leading=18, spaceBefore=9, spaceAfter=5, keepWithNext=True)
+subhead = ParagraphStyle('Subhead', parent=heading, fontSize=13, leading=16, spaceBefore=5, spaceAfter=2)
+story = []
+
+
+def add(style, text):
+    story.append(Paragraph(text, style))
+
+
+def link(url, label):
+    return f'<a href="{escape(url)}" color="#000000">{escape(label)}</a>'
+
+
+def footer(canvas, doc):
+    canvas.setFillColor(black)
+    canvas.setFont('TNR', 12)
+    canvas.drawString(54, 31, 'CGT 390 Lab 9 | API and Data Design')
+    canvas.drawRightString(558, 31, f'Page {doc.page}')
+
+
+repo = 'https://github.com/MahinaYasutake/CGT390_Project'
+branch = repo + '/tree/codex/lab9-backend-database'
+api = repo + '/blob/codex/lab9-backend-database/event-discovery-app/api/saved.js'
+client = repo + '/blob/codex/lab9-backend-database/event-discovery-app/app.js'
+catalog = repo + '/blob/codex/lab9-backend-database/event-discovery-app/catalog.js'
+log = repo + '/blob/codex/lab9-backend-database/output/lab9/backend-test-log.json'
+ui_log = repo + '/blob/codex/lab9-backend-database/output/lab9/backend-ui-tests.json'
+before_log = repo + '/blob/master/output/lab9/before-tests.json'
+after_log = repo + '/blob/master/output/lab9/after-tests.json'
+
+add(title, 'CGT 390 Lab 9 API and Data Design Report')
+add(body, 'Mahina Yasutake | Gatherly | October 22, 2026')
+add(body, '<b>Live prototype:</b> ' + link('https://cgt-390-project-seven.vercel.app/', 'cgt-390-project-seven.vercel.app'))
+add(body, '<b>Backend branch:</b> ' + link(branch, 'github.com/MahinaYasutake/CGT390_Project/tree/codex/lab9-backend-database'))
+add(body, '<b>Implementation status:</b> The backend and SQLite-compatible database are implemented on the linked branch and passed local tests. The public live URL still serves the earlier browser-storage version. The backend has not been verified against a connected cloud database.')
+
+add(heading, '1. Interaction and contract')
+add(body, 'The task is to save Clay Club to a shortlist, see it after a reload, and remove it later. The revised prototype sends this action to a server API backed by an SQLite-compatible database.')
+add(subhead, 'Entry point')
+add(body, 'The Save button in ' + link(client, 'app.js') + ' sends POST /api/saved with JSON {"eventId":"clay-club"}. ' + link(api, 'api/saved.js') + ' validates the request, derives an anonymous visitor from an HttpOnly cookie, writes the database row, and returns the current IDs. GET /api/saved reads the list; DELETE /api/saved?eventId=clay-club removes one item.')
+add(subhead, 'Annotated flow')
+add(body, 'Save button → POST /api/saved → request validation and visitor cookie → events table ID check → saved_events insert → JSON response → Saved Events view. The public catalog supplies display details; saved_events stores the visitor-event relationship.')
+add(subhead, 'Contract')
+add(body, 'POST accepts exactly one field, eventId, as a string. A new save returns HTTP 201 with eventId, saved:true, and ids; a duplicate returns 200 with the same single saved row. DELETE returns 200 with saved:false and updated ids. A malformed body returns 400 INVALID_BODY; an unknown event returns 404 EVENT_NOT_FOUND; database unavailability returns 503 SAVE_SERVICE_UNAVAILABLE.')
+
+add(heading, '2. Data and access decisions')
+add(body, 'The events table contains catalog IDs. saved_events contains visitor_id, event_id, and created_at. Its (visitor_id, event_id) primary key prevents duplicates; event_id has a foreign key to events. The shared ' + link(catalog, 'catalog.js') + ' array supplies public event details and seeds valid IDs in the database. The database is the source of truth for saved relationships.')
+add(body, 'The server creates a random visitor cookie and stores a hash of it as visitor_id. It never accepts a visitor ID from request JSON. Every read and write is scoped to that derived ID, so one anonymous browser cannot target another visitor’s rows through the API. The cookie is HttpOnly and SameSite=Lax. This is anonymous ownership, not a signed-in account; clearing the cookie loses access to the list. No email, token, or payment field is returned.')
+
+add(heading, '3. Testing evidence')
+add(body, 'The branch API ran against a temporary real database on October 22. Predictions were compared with HTTP responses and follow-up reads. The sanitized ' + link(log, 'API test log') + ' omits cookie values; the ' + link(ui_log, 'browser test log') + ' records local screen behavior. These are local results, not production API results.')
+add(subhead, 'T1 Successful action')
+add(body, '<b>Input/identity:</b> Visitor A POST {"eventId":"clay-club"}, then GET. <b>Prediction:</b> 201 and one saved ID after the read. <b>Actual:</b> 201 {"eventId":"clay-club","saved":true,"ids":["clay-club"]}; GET retained the ID. The local browser showed Saved 1 after reload. The insert and subsequent SELECT demonstrate persistence.')
+add(subhead, 'T2 Invalid input')
+add(body, '<b>Input/identity:</b> Visitor A POST {"eventId":42}; then POST {"eventId":"not-real"}. <b>Prediction:</b> reject both and leave the list unchanged. <b>Actual:</b> 400 {"error":"INVALID_BODY"} and 404 {"error":"EVENT_NOT_FOUND"}; GET still showed ["clay-club"]. Type validation and the events-table lookup explain the two results.')
+add(subhead, 'T3 Access boundary')
+add(body, '<b>Input/identity:</b> Visitor B GET, then DELETE clay-club; A GET again. <b>Prediction:</b> B starts empty and cannot remove A’s save. <b>Actual:</b> B’s initial GET returned {"ids":[]}; after B’s delete, A’s GET still returned {"ids":["clay-club"]}. A forged visitorId field in POST returned 400. The server-derived cookie identity and visitor-scoped SQL explain the boundary.')
+add(subhead, 'T4 Task-specific edge case')
+add(body, '<b>Input/identity:</b> Visitor A repeats POST clay-club. <b>Prediction:</b> a second request leaves one row. <b>Actual:</b> HTTP 200 returned the same one-item list. The composite primary key and INSERT OR IGNORE explain the result. A direct insert with a nonexistent event ID was rejected by the foreign key.')
+
+add(heading, '4. Findings and response')
+add(body, 'The original browser-storage review found two defects: invalid IDs were saved, and unknown detail links showed a different event. The ' + link(before_log, 'before log') + ' shows ["not-real",""]; the ' + link(after_log, 'retest log') + ' shows no write after the client fix. That repair is live.')
+add(body, 'On the backend branch, server validation and database constraints enforce the save rule. API tests passed the four cases above. Four local browser checks also passed: reload persistence, two-tab consistency, visitor isolation, and migration of old localStorage IDs.')
+add(body, '<b>Remaining work:</b> Connect Turso to Vercel for Preview and Production, deploy the branch, and repeat API and browser tests at the live URL. The public URL still uses localStorage. An anonymous cookie is not an account; reservations and capacity checks remain outside scope.')
+
+add(heading, '5. Peer review and AI use')
+add(subhead, 'Peer review')
+add(body, 'Pending: no classmate has yet proposed and run an additional case. The peer should try a fifth case and report the input, predicted and actual result, and any fix or clarification.')
+add(subhead, 'AI use')
+add(body, 'ChatGPT/Codex reviewed the code, built and ran the tests, implemented repairs, and drafted this report. The claims above were checked against the code, browser results, and stored values. I reviewed the document, decided on which action to investigate, and drafted parts of this report.')
+
+doc = SimpleDocTemplate(str(OUT), pagesize=(612, 792), leftMargin=48, rightMargin=48, topMargin=36, bottomMargin=42, title='CGT 390 Lab 9 API and Data Design Report', author='Mahina Yasutake')
+doc.build(story, onFirstPage=footer, onLaterPages=footer)
 print(OUT)
