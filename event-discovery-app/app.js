@@ -8,10 +8,53 @@ const events = [
 ];
 
 const savedKey = 'gatherly-saved-events';
-const getSaved = () => JSON.parse(localStorage.getItem(savedKey) || '[]');
-const isSaved = id => getSaved().includes(id);
-const setSaved = ids => localStorage.setItem(savedKey, JSON.stringify(ids));
 const eventById = id => events.find(event => event.id === id);
+const validEventId = id => typeof id === 'string' && Boolean(eventById(id));
+
+function getSaved() {
+  // Browser storage is untrusted. Read safely without overwriting damaged data.
+  try {
+    const ids = JSON.parse(localStorage.getItem(savedKey) || '[]');
+    return Array.isArray(ids) ? [...new Set(ids.filter(validEventId))] : [];
+  } catch {
+    return [];
+  }
+}
+const isSaved = id => getSaved().includes(id);
+
+function setSaved(ids) {
+  if (!Array.isArray(ids) || !ids.every(validEventId)) {
+    return {ok: false, error: 'Invalid saved event list.'};
+  }
+  const uniqueIds = [...new Set(ids)];
+  try {
+    localStorage.setItem(savedKey, JSON.stringify(uniqueIds));
+    return {ok: true, ids: uniqueIds};
+  } catch {
+    return {ok: false, error: 'Could not update saved events. Browser storage may be full or unavailable. Try again.'};
+  }
+}
+
+function toggleSaved(id) {
+  if (!validEventId(id)) return {ok: false, error: 'This event is not available to save.'};
+  const saved = getSaved();
+  const wasSaved = saved.includes(id);
+  const result = setSaved(wasSaved ? saved.filter(item => item !== id) : [...saved, id]);
+  return result.ok ? {...result, id, saved: !wasSaved} : result;
+}
+
+function announceSave(message) {
+  let status = document.querySelector('[data-save-status]');
+  if (!status) {
+    status = document.createElement('p');
+    status.dataset.saveStatus = '';
+    status.className = 'save-note';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    document.querySelector('main').append(status);
+  }
+  status.textContent = message;
+}
 const trackGAEvent = (name, params = {}) => {
   if (typeof window.gtag === 'function') {
     window.gtag('event', name, params);
@@ -57,24 +100,30 @@ function renderExplore() {
 }
 function renderDetail() {
   const target = document.querySelector('[data-event-detail]'); if (!target) return;
-  const event = eventById(new URLSearchParams(location.search).get('id')) || events[0];
+  const event = eventById(new URLSearchParams(location.search).get('id'));
+  if (!event) {
+    target.innerHTML = '<h1>Event not found</h1><p>This event is unavailable. <a href="explore.html">Back to explore</a></p>';
+    return;
+  }
   const saved = isSaved(event.id);
   target.innerHTML = `<a class="detail-back" href="explore.html">← Back to explore</a><div class="detail-layout"><div class="detail-image ${event.color}"><span>${event.category} · ${event.tag}</span><strong>${event.title.split(':')[0]}</strong></div><div class="detail-copy"><p class="eyebrow">${event.category}</p><h1>${event.title}</h1><p>${event.description}</p><div class="detail-facts"><p class="detail-fact"><strong>When</strong><span>${event.date}</span></p><p class="detail-fact"><strong>Where</strong><span>${event.location}</span></p><p class="detail-fact"><strong>Hosted by</strong><span>${event.organizer}</span></p></div><section class="before-you-go" aria-labelledby="before-you-go-title"><p class="eyebrow" id="before-you-go-title">Before you go</p><div class="practical-grid"><p><strong>Duration</strong><span>${event.duration}</span></p><p><strong>Good for</strong><span>${event.audience}</span></p><p><strong>Materials</strong><span>${event.materials}</span></p><p><strong>Attendance</strong><span>${event.attendance}</span></p></div></section><div class="detail-actions"><button class="button" data-save="${event.id}" aria-describedby="save-note" aria-pressed="${saved}">${saved ? '♥ Saved' : '♡ Save event'}</button><span class="muted">${event.price}</span></div><p class="save-note" id="save-note" role="status" aria-live="polite">Save this event to your shortlist. Saving does not reserve a spot.</p></div></div>`;
 }
 function renderSaved() { const target = document.querySelector('[data-saved-events]'); if (!target) return; const saved = events.filter(event => getSaved().includes(event.id)); target.innerHTML = saved.map(eventCard).join(''); document.querySelector('[data-saved-empty]').hidden = saved.length > 0; }
 document.addEventListener('click', event => {
   const button = event.target.closest('[data-save]'); if (!button) return;
-  const id = button.dataset.save;
-  const selectedEvent = eventById(id);
-  const saved = getSaved();
-  const wasSaved = saved.includes(id);
-  setSaved(wasSaved ? saved.filter(item => item !== id) : [...saved, id]);
-  trackGAEvent(wasSaved ? 'event_unsaved' : 'event_saved', {
-    event_id: id,
-    event_title: selectedEvent?.title || id,
-    event_category: selectedEvent?.category || 'Unknown'
-  });
+  const result = toggleSaved(button.dataset.save);
+  if (!result.ok) {
+    announceSave(result.error);
+    return;
+  }
+  const selectedEvent = eventById(result.id);
   updateSavedCount(); renderFeatured(); renderSaved(); renderExplore(); renderDetail();
+  announceSave(result.saved ? 'Event saved in this browser. Saving does not reserve a spot.' : 'Event removed from your saved list.');
+  trackGAEvent(result.saved ? 'event_saved' : 'event_unsaved', {
+    event_id: result.id,
+    event_title: selectedEvent.title,
+    event_category: selectedEvent.category
+  });
 });
 document.querySelector('[data-newsletter-form]')?.addEventListener('submit', event => { event.preventDefault(); event.target.querySelector('.form-message').textContent = 'You’re on the list—see you next week.'; event.target.reset(); });
 updateSavedCount(); renderFeatured(); renderExplore(); renderDetail(); renderSaved();
