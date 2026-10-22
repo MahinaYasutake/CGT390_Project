@@ -74,17 +74,17 @@
           "width": 768,
           "scrollWidth": 768
         },
-        "imageHeight": 360,
+        "imageHeight": 300,
         "action": {
           "position": "static",
-          "x": 510.046875,
-          "y": 808.9375,
-          "width": 229.9375,
+          "x": 28,
+          "y": 614.15625,
+          "width": 712,
           "height": 41,
-          "top": 808.9375,
-          "right": 739.984375,
-          "bottom": 849.9375,
-          "left": 510.046875
+          "top": 614.15625,
+          "right": 740,
+          "bottom": 655.15625,
+          "left": 28
         },
         "pageErrors": []
       },
