@@ -15,10 +15,12 @@ for name,file in [('TNR','Times New Roman.ttf'),('TNRB','Times New Roman Bold.tt
     pdfmetrics.registerFont(TTFont(name,str(fonts/file)))
 pdfmetrics.registerFontFamily('TNR',normal='TNR',bold='TNRB')
 body=ParagraphStyle('Body',fontName='TNR',fontSize=12,leading=24,textColor=black,spaceAfter=8)
-heading=ParagraphStyle('Heading',parent=body,fontName='TNRB',spaceBefore=12,spaceAfter=7,keepWithNext=True)
-subhead=ParagraphStyle('Subhead',parent=heading,spaceBefore=7,spaceAfter=3)
+title=ParagraphStyle('Title',parent=body,fontName='TNRB',fontSize=16,leading=20,spaceAfter=12,keepWithNext=True)
+heading=ParagraphStyle('Heading',parent=body,fontName='TNRB',fontSize=14,leading=18,spaceBefore=14,spaceAfter=8,keepWithNext=True)
+subhead=ParagraphStyle('Subhead',parent=heading,fontSize=13,leading=16,spaceBefore=8,spaceAfter=4)
 story=[]
 def p(t): story.append(Paragraph(t,body))
+def t(t): story.append(Paragraph(t,title))
 def h(t): story.append(Paragraph(t,heading))
 def sh(t): story.append(Paragraph(t,subhead))
 def link(url,label): return f'<a href="{escape(url)}" color="#000000">{escape(label)}</a>'
@@ -30,7 +32,7 @@ repo='https://github.com/MahinaYasutake/CGT390_Project'
 commit='https://github.com/MahinaYasutake/CGT390_Project/commit/0a6d62a925740f38b0d83e428dec8be57fbffa33'
 logs=repo+'/tree/master/output/lab9'
 code=repo+'/blob/master/event-discovery-app/app.js'
-h('CGT 390 Lab 9 API and Data Design Report')
+t('CGT 390 Lab 9 API and Data Design Report')
 p('Mahina Yasutake | Gatherly | October 22, 2026')
 p('<b>Live prototype:</b> '+link('https://cgt-390-project-seven.vercel.app/','cgt-390-project-seven.vercel.app'))
 p('<b>Repository:</b> '+link(repo,'github.com/MahinaYasutake/CGT390_Project'))
