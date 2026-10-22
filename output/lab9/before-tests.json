@@ -1,0 +1,148 @@
+{
+  "phase": "before",
+  "date": "2026-10-22",
+  "architecture": "Static HTML and browser localStorage; no save HTTP endpoint",
+  "tests": [
+    {
+      "id": "T1",
+      "input": "Save clay-club, reload, open Saved Events, remove, reload",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "One saved ID persists across reload; removing persists as []",
+      "actual": {
+        "saved": {
+          "stored": "[\"clay-club\"]",
+          "count": "1",
+          "button": "♥ Saved"
+        },
+        "cards": 1,
+        "removed": {
+          "stored": "[]",
+          "count": "0"
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "T2",
+      "input": "Change data-save to not-real then click; repeat with empty ID",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Reject unknown and empty IDs; raw storage unchanged; show failure",
+      "actual": {
+        "unknown": {
+          "stored": "[\"not-real\"]",
+          "count": "1",
+          "button": "♡ Save event"
+        },
+        "empty": {
+          "stored": "[\"not-real\",\"\"]",
+          "count": "2",
+          "button": "♡ Save event"
+        }
+      },
+      "pass": false
+    },
+    {
+      "id": "T3",
+      "input": "Save at port 4189; visit same app at port 4191; return to 4189",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Different origin starts empty; original origin retains clay-club",
+      "actual": {
+        "other": {
+          "stored": null,
+          "count": "0"
+        },
+        "cards": 0,
+        "original": {
+          "stored": "[\"clay-club\"]",
+          "count": "1",
+          "button": "♥ Saved"
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "T4",
+      "input": "Set stored value to {broken then reload",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Page renders without uncaught error; count 0; raw value unchanged",
+      "actual": {
+        "stored": "{broken",
+        "count": "0",
+        "pageErrors": [
+          "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "id": "T5",
+      "input": "Seed object {id:clay-club} and then null; reload each",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Both wrong JSON shapes render safely as empty; no uncaught error",
+      "actual": {
+        "values": [
+          {
+            "stored": "{\"id\":\"clay-club\"}",
+            "count": ""
+          },
+          {
+            "stored": "null",
+            "count": "0"
+          }
+        ],
+        "pageErrors": [
+          "getSaved(...).includes is not a function",
+          "Cannot read properties of null (reading 'length')"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "id": "T6",
+      "input": "Seed [clay-club,clay-club,not-real,7]; reload then save poster-lab",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Display one valid save; next successful write stores unique known IDs only",
+      "actual": {
+        "read": {
+          "stored": "[\"clay-club\",\"clay-club\",\"not-real\",7]",
+          "count": "4",
+          "button": "♥ Saved"
+        },
+        "write": {
+          "stored": "[\"clay-club\",\"clay-club\",\"not-real\",7,\"poster-lab\"]",
+          "count": "5",
+          "button": "♥ Saved"
+        }
+      },
+      "pass": false
+    },
+    {
+      "id": "T7",
+      "input": "Make Storage.prototype.setItem throw QuotaExceededError then click Save",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "No false success; stored value unchanged; visible error; no uncaught error",
+      "actual": {
+        "stored": null,
+        "count": "0",
+        "button": "♡ Save event",
+        "pageErrors": [
+          "Fictional test quota failure"
+        ]
+      },
+      "pass": false
+    },
+    {
+      "id": "T8",
+      "input": "Open event.html?id=not-real",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Show Event not found and no save button; do not silently substitute another event",
+      "actual": {
+        "httpStatus": 200,
+        "heading": "Night Market & Tiny Concerts",
+        "saveButtons": 1,
+        "stored": null
+      },
+      "pass": false
+    }
+  ]
+}

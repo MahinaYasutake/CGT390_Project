@@ -1,0 +1,218 @@
+{
+  "date": "2026-10-22",
+  "note": "Third-party network delivery intentionally blocked; local loader and queue behavior tested",
+  "results": [
+    {
+      "test": "Responsive flow 390px",
+      "expected": "No overflow; clay search and Creative filter retained after save; saved state persists; remove persists; home renders; no JavaScript page errors; mobile header, image and sticky action match documented behavior",
+      "actual": {
+        "header": {
+          "brand": {
+            "x": 28,
+            "y": 18,
+            "width": 334,
+            "height": 35.390625,
+            "top": 18,
+            "right": 362,
+            "bottom": 53.390625,
+            "left": 28
+          },
+          "nav": {
+            "x": 28,
+            "y": 67.390625,
+            "width": 334,
+            "height": 39.609375,
+            "top": 67.390625,
+            "right": 362,
+            "bottom": 107,
+            "left": 28
+          },
+          "width": 390,
+          "scrollWidth": 390
+        },
+        "imageHeight": 260,
+        "action": {
+          "position": "sticky",
+          "x": 28,
+          "y": 723.140625,
+          "width": 334,
+          "height": 67,
+          "top": 723.140625,
+          "right": 362,
+          "bottom": 790.140625,
+          "left": 28
+        },
+        "pageErrors": []
+      },
+      "pass": true
+    },
+    {
+      "test": "Responsive flow 768px",
+      "expected": "No overflow; clay search and Creative filter retained after save; saved state persists; remove persists; home renders; no JavaScript page errors; mobile header, image and sticky action match documented behavior",
+      "actual": {
+        "header": {
+          "brand": {
+            "x": 28,
+            "y": 23.296875,
+            "width": 119.859375,
+            "height": 35.390625,
+            "top": 23.296875,
+            "right": 147.859375,
+            "bottom": 58.6875,
+            "left": 28
+          },
+          "nav": {
+            "x": 428.90625,
+            "y": 21.1875,
+            "width": 311.09375,
+            "height": 39.609375,
+            "top": 21.1875,
+            "right": 740,
+            "bottom": 60.796875,
+            "left": 428.90625
+          },
+          "width": 768,
+          "scrollWidth": 768
+        },
+        "imageHeight": 300,
+        "action": {
+          "position": "static",
+          "x": 28,
+          "y": 614.15625,
+          "width": 712,
+          "height": 41,
+          "top": 614.15625,
+          "right": 740,
+          "bottom": 655.15625,
+          "left": 28
+        },
+        "pageErrors": []
+      },
+      "pass": true
+    },
+    {
+      "test": "Responsive flow 1100px",
+      "expected": "No overflow; clay search and Creative filter retained after save; saved state persists; remove persists; home renders; no JavaScript page errors; mobile header, image and sticky action match documented behavior",
+      "actual": {
+        "header": {
+          "brand": {
+            "x": 28,
+            "y": 23.296875,
+            "width": 119.859375,
+            "height": 35.390625,
+            "top": 23.296875,
+            "right": 147.859375,
+            "bottom": 58.6875,
+            "left": 28
+          },
+          "nav": {
+            "x": 760.90625,
+            "y": 21.1875,
+            "width": 311.09375,
+            "height": 39.609375,
+            "top": 21.1875,
+            "right": 1072,
+            "bottom": 60.796875,
+            "left": 760.90625
+          },
+          "width": 1100,
+          "scrollWidth": 1100
+        },
+        "imageHeight": 360,
+        "action": {
+          "position": "static",
+          "x": 725.84375,
+          "y": 804.890625,
+          "width": 346.140625,
+          "height": 41,
+          "top": 804.890625,
+          "right": 1071.984375,
+          "bottom": 845.890625,
+          "left": 725.84375
+        },
+        "pageErrors": []
+      },
+      "pass": true
+    },
+    {
+      "test": "Deferred analytics index.html pointer",
+      "expected": "No vendor script before interaction; exactly one loader after first interaction; local event queue remains available",
+      "actual": {
+        "loaderCount": 1,
+        "gtagAvailable": true,
+        "eventSavedQueued": "not tested on this page"
+      },
+      "pass": true
+    },
+    {
+      "test": "Deferred analytics index.html keyboard",
+      "expected": "No vendor script before interaction; exactly one loader after first interaction; local event queue remains available",
+      "actual": {
+        "loaderCount": 1,
+        "gtagAvailable": true,
+        "eventSavedQueued": "not tested on this page"
+      },
+      "pass": true
+    },
+    {
+      "test": "Deferred analytics explore.html pointer",
+      "expected": "No vendor script before interaction; exactly one loader after first interaction; local event queue remains available",
+      "actual": {
+        "loaderCount": 1,
+        "gtagAvailable": true,
+        "eventSavedQueued": "not tested on this page"
+      },
+      "pass": true
+    },
+    {
+      "test": "Deferred analytics explore.html keyboard",
+      "expected": "No vendor script before interaction; exactly one loader after first interaction; local event queue remains available",
+      "actual": {
+        "loaderCount": 1,
+        "gtagAvailable": true,
+        "eventSavedQueued": "not tested on this page"
+      },
+      "pass": true
+    },
+    {
+      "test": "Deferred analytics event.html?id=clay-club pointer",
+      "expected": "No vendor script before interaction; exactly one loader after first interaction; local event queue remains available",
+      "actual": {
+        "loaderCount": 1,
+        "gtagAvailable": true,
+        "eventSavedQueued": true
+      },
+      "pass": true
+    },
+    {
+      "test": "Deferred analytics event.html?id=clay-club keyboard",
+      "expected": "No vendor script before interaction; exactly one loader after first interaction; local event queue remains available",
+      "actual": {
+        "loaderCount": 1,
+        "gtagAvailable": true,
+        "eventSavedQueued": true
+      },
+      "pass": true
+    },
+    {
+      "test": "Deferred analytics saved.html pointer",
+      "expected": "No vendor script before interaction; exactly one loader after first interaction; local event queue remains available",
+      "actual": {
+        "loaderCount": 1,
+        "gtagAvailable": true,
+        "eventSavedQueued": "not tested on this page"
+      },
+      "pass": true
+    },
+    {
+      "test": "Deferred analytics saved.html keyboard",
+      "expected": "No vendor script before interaction; exactly one loader after first interaction; local event queue remains available",
+      "actual": {
+        "loaderCount": 1,
+        "gtagAvailable": true,
+        "eventSavedQueued": "not tested on this page"
+      },
+      "pass": true
+    }
+  ]
+}
