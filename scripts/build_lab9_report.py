@@ -43,14 +43,16 @@ client = repo + '/blob/codex/lab9-backend-database/event-discovery-app/app.js'
 catalog = repo + '/blob/codex/lab9-backend-database/event-discovery-app/catalog.js'
 log = repo + '/blob/codex/lab9-backend-database/output/lab9/backend-test-log.json'
 ui_log = repo + '/blob/codex/lab9-backend-database/output/lab9/backend-ui-tests.json'
+preview_log = repo + '/blob/codex/lab9-backend-database/output/lab9/preview-verification.json'
 before_log = repo + '/blob/master/output/lab9/before-tests.json'
 after_log = repo + '/blob/master/output/lab9/after-tests.json'
 
 add(title, 'CGT 390 Lab 9 API and Data Design Report')
 add(body, 'Mahina Yasutake | Gatherly | October 22, 2026')
 add(body, '<b>Live prototype:</b> ' + link('https://cgt-390-project-seven.vercel.app/', 'cgt-390-project-seven.vercel.app'))
+add(body, '<b>Backend preview:</b> ' + link('https://cgt-390-project-git-codex-lab9-backend-database-mahinay.vercel.app/', 'cgt-390-project-git-codex-lab9-backend-database-mahinay.vercel.app'))
 add(body, '<b>Backend branch:</b> ' + link(branch, 'github.com/MahinaYasutake/CGT390_Project/tree/codex/lab9-backend-database'))
-add(body, '<b>Implementation status:</b> The backend and SQLite-compatible database are implemented on the linked branch and passed local tests. The public live URL still serves the earlier browser-storage version. The backend has not been verified against a connected cloud database.')
+add(body, '<b>Implementation status:</b> The backend passed local tests and a save-reload-remove flow on its connected Turso preview. The public live URL still serves the earlier browser-storage version until the branch is deployed to production.')
 
 add(heading, '1. Interaction and contract')
 add(body, 'The task is to save Clay Club to a shortlist, see it after a reload, and remove it later. The revised prototype sends this action to a server API backed by an SQLite-compatible database.')
@@ -66,7 +68,7 @@ add(body, 'The events table contains catalog IDs. saved_events contains visitor_
 add(body, 'The server creates a random visitor cookie and stores a hash of it as visitor_id. It never accepts a visitor ID from request JSON. Every read and write is scoped to that derived ID, so one anonymous browser cannot target another visitor’s rows through the API. The cookie is HttpOnly and SameSite=Lax. This is anonymous ownership, not a signed-in account; clearing the cookie loses access to the list. No email, token, or payment field is returned.')
 
 add(heading, '3. Testing evidence')
-add(body, 'The branch API ran against a temporary real database on October 22. Predictions were compared with HTTP responses and follow-up reads. The sanitized ' + link(log, 'API test log') + ' omits cookie values; the ' + link(ui_log, 'browser test log') + ' records local screen behavior. These are local results, not production API results.')
+add(body, 'The branch API ran against a temporary real database on October 22. Predictions were compared with HTTP responses and follow-up reads. The sanitized ' + link(log, 'API test log') + ' omits cookie values; the ' + link(ui_log, 'browser test log') + ' records local screen behavior. The ' + link(preview_log, 'preview check') + ' records a hosted save, reload, and removal. The four HTTP cases below are local tests.')
 add(subhead, 'T1 Successful action')
 add(body, '<b>Input/identity:</b> Visitor A POST {"eventId":"clay-club"}, then GET. <b>Prediction:</b> 201 and one saved ID after the read. <b>Actual:</b> 201 {"eventId":"clay-club","saved":true,"ids":["clay-club"]}; GET retained the ID. The local browser showed Saved 1 after reload. The insert and subsequent SELECT demonstrate persistence.')
 add(subhead, 'T2 Invalid input')
@@ -78,8 +80,8 @@ add(body, '<b>Input/identity:</b> Visitor A repeats POST clay-club. <b>Predictio
 
 add(heading, '4. Findings and response')
 add(body, 'The original browser-storage review found two defects: invalid IDs were saved, and unknown detail links showed a different event. The ' + link(before_log, 'before log') + ' shows ["not-real",""]; the ' + link(after_log, 'retest log') + ' shows no write after the client fix. That repair is live.')
-add(body, 'On the backend branch, server validation and database constraints enforce the save rule. API tests passed the four cases above. Four local browser checks also passed: reload persistence, two-tab consistency, visitor isolation, and migration of old localStorage IDs.')
-add(body, '<b>Remaining work:</b> Connect Turso to Vercel for Preview and Production, deploy the branch, and repeat API and browser tests at the live URL. The public URL still uses localStorage. An anonymous cookie is not an account; reservations and capacity checks remain outside scope.')
+add(body, 'On the backend branch, server validation and database constraints enforce the save rule. API tests passed the four cases above. Four local browser checks passed: reload persistence, two-tab consistency, visitor isolation, and migration of old localStorage IDs. The connected preview also passed save, reload, Saved page, and removal.')
+add(body, '<b>Remaining work:</b> Deploy the branch to the public URL and repeat the API and browser checks there. The public URL still uses localStorage. An anonymous cookie is not an account; reservations and capacity checks remain outside scope.')
 
 add(heading, '5. Peer review and AI use')
 add(subhead, 'Peer review')
