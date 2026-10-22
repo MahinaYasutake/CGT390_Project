@@ -15,15 +15,17 @@ fontdir=Path(os.environ.get('TIMES_NEW_ROMAN_DIR','/System/Library/Fonts/Supplem
 for name,file in [('TNR','Times New Roman.ttf'),('TNRB','Times New Roman Bold.ttf'),('TNRI','Times New Roman Italic.ttf'),('TNRBI','Times New Roman Bold Italic.ttf')]:
  pdfmetrics.registerFont(TTFont(name,str(fontdir/file)))
 pdfmetrics.registerFontFamily('TNR',normal='TNR',bold='TNRB',italic='TNRI',boldItalic='TNRBI')
-style=ParagraphStyle('Body',fontName='TNR',fontSize=12,leading=15,spaceAfter=7,textColor=black,splitLongWords=True)
-head=ParagraphStyle('Heading',parent=style,fontName='TNRB',spaceBefore=7,spaceAfter=8,keepWithNext=True)
-small=ParagraphStyle('Evidence',parent=style,leftIndent=12,spaceAfter=7)
+style=ParagraphStyle('Body',fontName='TNR',fontSize=12,leading=24,spaceAfter=8,textColor=black,splitLongWords=True)
+head=ParagraphStyle('Heading',parent=style,fontName='TNRB',spaceBefore=12,spaceAfter=10,keepWithNext=True)
+small=ParagraphStyle('Evidence',parent=style,leftIndent=12,spaceAfter=8)
 story=[]
 def p(text,sty=style): story.append(Paragraph(text,sty))
 def h(text): p(text,head)
 def link(url,label):return f'<a href="{escape(url)}" color="#000000">{escape(label)}</a>'
-def label(name,text):p(f'<b>{name}</b> {text}')
-def newpage(): story.append(PageBreak())
+def label(name,text):
+ h(name)
+ p(text)
+def newpage(): pass
 repo='https://github.com/MahinaYasutake/CGT390_Project'
 code=repo+'/blob/ce5faacd06304867415e88227938d71d857d0ac3/event-discovery-app/app.js'
 evidence=repo+'/tree/90e443910ae77ee68bdd516b2d7dd2cd15fd33a5/output/lab9'
@@ -34,7 +36,7 @@ p('Mahina Yasutake | Gatherly | October 22, 2026')
 p('<b>Live prototype:</b> '+link('https://cgt-390-project-seven.vercel.app/','https://cgt-390-project-seven.vercel.app/'))
 p('<b>Repository:</b> '+link(repo,'github.com/MahinaYasutake/CGT390_Project'))
 p('<b>Release status:</b> Nine data checks and eleven mobile and analytics checks passed locally. '+link(pr,'Merged pull request 1')+' updates the default branch. Vercel deployment and three live task flows passed. Peer testing is pending.')
-h('1 Interaction and contract')
+h('1. Interaction and contract')
 p('The task is to open Clay Club, save it to a shortlist, and later remove it. This changes stored data in the browser. The implementation uses static HTML and JavaScript; there is no save API endpoint, Server Function, or database.')
 label('Entry point', 'A document click listener handles buttons with data-save in event-discovery-app/app.js, lines 115-130. event.html renders details; saved.html displays the shortlist.')
 label('Annotated flow', 'Save button data-save="clay-club" → click listener → toggleSaved(id) → setSaved(ids) → localStorage key gatherly-saved-events. After a successful write, count and page views refresh. On reload, getSaved() reads the same key. These are ordinary browser functions, not separate HTTP endpoints.')
@@ -44,31 +46,24 @@ label('Rejected result', 'An unavailable ID returns {ok:false, error:"This event
 p('<b>Code references:</b> '+link(code+'#L10-L44','storage and validation lines 10-44')+'; '+link(code+'#L104-L130','detail lookup and click handler lines 104-130')+'.')
 
 newpage()
-h('2 Data and access decisions')
+h('2. Data and access decisions')
 label('Entities and relationship', 'Event has a required unique string id, title, date, location, category, organizer, price, and descriptive fields. The current catalog contains six fictional records. A saved list is an array of Event IDs for one browser profile and origin. One list can reference many catalog events; the prototype has no User entity or user_id.')
 label('Important rule', 'Every saved ID must refer to a catalog event and appear at most once. Save is a toggle: a second activation removes the event. This behavior is intentional and is not an idempotent reservation or repeated save request.')
 label('Source of truth', 'The events array in app.js defines the public catalog. localStorage is the current browser shortlist store; it is not an authoritative account database. Reads filter unknown and non-string IDs and deduplicate valid IDs. Malformed JSON or a non-array value renders as an empty shortlist without automatically overwriting the damaged value. A later valid write replaces it with a normalized list.')
 label('Access policy', 'Anonymous visitors may browse and save fictional events. The browser separates localStorage by origin; T3 checks the same application on two different ports. This fits a browser-local shortlist, but it is not user authorization. People sharing the same browser profile and origin share the same shortlist. Client-side code can be bypassed or storage edited directly.')
 label('Public and private fields', 'All catalog fields are public to anyone who downloads app.js. The saved key stores only event IDs, with no email, token, account ID, or payment information. Any JavaScript executing on that origin can access the list. The save analytics call includes event ID, title, and category; third-party requests were blocked in the tests, so external analytics delivery was not evaluated.')
-label('Continuity from earlier labs', 'The initial GitHub baseline 4e5a94a lacked the mobile and deferred-analytics changes documented in Lab 7. Existing local accessibility edits were preserved as 51d8641. This release restores second-row mobile navigation, 260px mobile detail artwork, sticky save controls, and interaction-triggered analytics on all four pages. Responsive flows passed at 390, 768, and 1100px; these are new checks, not a rerun of earlier Lighthouse measurements. Lab 8 authentication, database uniqueness, and transactional availability remain proposed architecture.')
+label('Continuity from earlier labs', 'The initial GitHub baseline 4e5a94a lacked the mobile and deferred-analytics changes documented in Lab 7. Lab 6 accessibility edits were preserved as 51d8641 and remain in the live prototype. The live check confirmed the announced result count, combined category and tag, explicit save state, shorter Explore heading, and focus styles. This release restores second-row mobile navigation, 260px mobile detail artwork, sticky save controls, and interaction-triggered analytics on all four pages. Responsive flows passed at 390, 768, and 1100px; these are new checks, not a rerun of earlier Lighthouse measurements. Lab 8 authentication, database uniqueness, and transactional availability remain proposed architecture.')
 label('Server enforcement', 'None exists for saving. These repairs improve prototype robustness. Account-backed saves would require server validation, ownership checks, and a unique user-event constraint before the planned Lab 8 architecture could be claimed as implemented.')
 
 newpage()
-h('3 Testing evidence')
+h('3. Testing evidence')
 p('Tests ran on October 22 in headless Google Chrome through Playwright. Each case used a fresh browser context and fictional data. The app was served at http://127.0.0.1:4189; T3 also used port 4191. Predictions were recorded in the runner before execution. The same eight cases ran before and after repair; T9 additionally checked the new function contract.')
 p('Identity for every case: anonymous visitor, with no account or role. Results below are browser state and returned values, not save HTTP responses. Full inputs, predictions, actual observations, and pass flags are in '+link(evidence,'the before and after JSON test logs')+'.')
-compact_tests=False
 def test(title,input,expected,actual,interpretation):
- if compact_tests:
-  p(title,ParagraphStyle('CompactHeading',parent=head,spaceBefore=4,spaceAfter=5))
-  compact=ParagraphStyle('CompactBody',parent=style,spaceAfter=5)
-  p('<b>Input and prediction</b> '+input+' '+expected,compact)
-  p('<b>Observed and interpretation</b> '+actual+' '+interpretation,compact)
- else:
-  h(title)
-  label('Input and prediction', input+' '+expected)
-  label('Observed',actual)
-  label('Evidence and interpretation',interpretation)
+ h(title)
+ label('Input and prediction', input+' '+expected)
+ label('Observed', actual)
+ label('Evidence and interpretation', interpretation)
 test('T1 Successful save and remove',
  'Save clay-club, reload, open Saved Events, remove it, and reload again.',
  'Predict one saved event after saving and zero after removing.',
@@ -91,7 +86,7 @@ test('T4 Malformed stored JSON',
  'T4 in both logs. The guarded parser in getSaved, lines 14-22, prevents a damaged value from crashing the page.')
 
 newpage()
-h('3 Testing evidence continued')
+
 compact_tests=True
 test('T5 Wrong JSON shapes',
  'Store {"id":"clay-club"}, reload, then store null and reload.',
@@ -121,13 +116,13 @@ test('T9 Direct function validation',
  'T9 in the after log. Direct browser-function calls check the contract independently of normal button input; there is no server function to invoke.')
 
 newpage()
-h('4 Findings and response')
+h('4. Findings and response')
 p('The baseline passed 2 of 8 checks. All 8 repeated checks and the additional direct-function check passed after repair. Six failing cases exposed data-handling weaknesses; normal persistence and origin separation already worked.')
 label('Implemented repairs', 'The code now checks event IDs and list types, safely reads malformed storage, removes duplicate and invalid stored entries from the displayed list, catches storage write errors, and reports failures to the user. Invalid detail IDs show Event not found instead of an unrelated event. Successful UI updates and save analytics occur after a successful storage write.')
 p('<b>Changed code:</b> '+link(code,'current app.js')+' contains the data repairs. Parser and validation: lines 10-44; feedback: lines 46-57; missing event handling: lines 104-110; action handling: lines 115-130. '+link(pr,'Merged pull request 1')+' also preserves prior local accessibility edits. '+link(evidence,'Before and after logs')+' provide the retest evidence. The changes are merged into master and deployed through Vercel.')
 label('Release verification', 'The restored mobile and analytics behavior passed 11 local checks. Three deployed assets matched local source; live task flows passed at 390, 768, and 1100px. Explore now preserves search and filters after saving. Evidence and reproducible test scripts are linked with the results.')
 label('Remaining limitations', 'This test set does not establish account isolation or server enforcement. It does not cover concurrent-tab writes, storage eviction, all browser engines, or external analytics delivery. Two simultaneous tabs can still overwrite each other through read-modify-write. Malformed storage is preserved until a valid write; it is not repaired by a read alone. Saving still does not reserve a place, guarantee availability, or synchronize to another browser.')
-h('5 Peer review and AI use')
+h('5. Peer review and AI use')
 label('Peer review status', 'Pending. No classmate has proposed or run an additional test yet. The blocker is the missing classmate contribution; the nine automated checks are not represented as peer review.')
 label('Classmate handoff', 'Share the interaction contract and current live prototype. Ask a classmate to propose one additional case beyond T1-T9. A possible discussion starter is two tabs changing the shortlist. Record the peer name or initials, their chosen input, prediction, browser/origin, observed result, and any fix or clarification. Preserve the original result and retest after any repair.')
 label('AI use and verification', 'ChatGPT/Codex extracted the workshop and previous reports, compared GitHub and local code, wrote the tests, implemented repairs, and drafted this report. Its explanations were checked against source lines, recorded browser errors, returned values, and raw storage before and after reload. Student review and the classmate test remain outstanding; no independent student verification is claimed here.')

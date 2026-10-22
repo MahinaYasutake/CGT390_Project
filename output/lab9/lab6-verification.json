@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-22",
+  "site": "https://cgt-390-project-seven.vercel.app",
+  "source": "Live browser inspection and published source",
+  "lab6_repairs": {
+    "explore_heading": "Find local events",
+    "result_status_attributes": {
+      "role": "status",
+      "aria-live": "polite",
+      "aria-atomic": "true"
+    },
+    "free_filter_result": "2 events shown",
+    "combined_card_category_and_tag": "Community \u00b7 FOOD \u00b7 MUSIC; Clay Club code combines Creative and HANDS-ON",
+    "save_toggle_aria_pressed_before": "false",
+    "save_toggle_aria_pressed_after": "true",
+    "focus_visible_css_present": ":is(a,button,input):focus-visible"
+  },
+  "conclusion": "All five implemented Lab 6 repair groups are present in the current prototype; no missing Lab 6 code was found."
+}
