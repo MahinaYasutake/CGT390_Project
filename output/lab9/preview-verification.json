@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-22",
+  "environment": "Vercel Preview",
+  "deploymentId": "5T8NuBYnzPjigMU1XRP3Hp7Vf1cN",
+  "database": "Turso Cloud Starter, connected to cgt-390-project for Preview and Production",
+  "tests": [
+    {
+      "action": "Save Clay Club from Explore",
+      "expected": "Saved count becomes 1",
+      "observed": "Saved 1; Clay Club save checkbox selected"
+    },
+    {
+      "action": "Reload Explore and open Saved Events",
+      "expected": "Save persists and Clay Club appears",
+      "observed": "Saved 1 after reload; Clay Club card appeared on Saved Events"
+    },
+    {
+      "action": "Remove Clay Club from Saved Events",
+      "expected": "Saved count becomes 0",
+      "observed": "Saved 0; empty state shown"
+    }
+  ],
+  "scope": "Browser UI observation on protected preview; direct production API retest pending",
+  "secretsIncluded": false
+}

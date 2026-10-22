@@ -141,4 +141,10 @@ The test evidence records 2/8 historical baseline checks passing, then 9/9 data 
 
 Week 8 server components remain proposed architecture. Peer testing has not yet occurred. External analytics delivery and concurrent account/database behavior have not been tested.
 
+## October 22 backend follow-up
+
+The Lab 8 handout (`System_Design_Short_Lab.docx`) says implementation was optional, so the submitted Lab 8 design correctly labeled its server and database as proposed. After a conversation with the professor, Mahina reported that a backend and database are expected for the current work. A separate `codex/lab9-backend-database` branch now adds a real `GET`/`POST`/`DELETE /api/saved` endpoint backed by libSQL/SQLite, with server-side event validation, anonymous visitor cookies, a unique visitor-event key, and a foreign key to the event catalog. The browser reads and writes through that endpoint and migrates valid IDs from the earlier localStorage list once.
+
+Local API/database integration tests and four UI checks passed. A sanitized response log and a two-tab screenshot are under `output/lab9`. Turso Cloud Starter was connected to the Vercel project for Preview and Production, providing the expected server-only variables. After redeploying the backend Preview with those settings, a hosted save, reload, Saved-page, and removal flow passed; see `preview-verification.json`. The production site remains on the earlier working browser-local version until the branch is deployed there and live API checks pass. A classmate's additional test is still pending.
+
 Production release verification: pull request 1 was merged into master as b3e9c85. Vercel reported success. app.js, analytics.js, and styles.css served by the live origin matched the tested source. Isolated live flows passed at 390px, 768px, and 1100px, including filtered saving, reload persistence, removal, and nonexistent-event handling. Evidence is in output/lab9/production-tests.json.
