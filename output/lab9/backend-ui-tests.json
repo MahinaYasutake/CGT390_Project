@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-22",
+  "evidence": [
+    {
+      "test": "Save, reload, and retain search",
+      "expected": "Saved 1 and search clay",
+      "actual": {
+        "savedCount": 1,
+        "search": "clay before reload"
+      },
+      "pass": true
+    },
+    {
+      "test": "Two tabs share server-backed list",
+      "expected": "Two saved cards after reload",
+      "actual": {
+        "cards": 2
+      },
+      "pass": true
+    },
+    {
+      "test": "Separate visitor",
+      "expected": "No saved cards",
+      "actual": {
+        "cards": 0
+      },
+      "pass": true
+    },
+    {
+      "test": "One-time localStorage migration",
+      "expected": "Third DB row and old key removed",
+      "actual": {
+        "cards": 3,
+        "oldKey": null
+      },
+      "pass": true
+    }
+  ],
+  "pageErrors": []
+}

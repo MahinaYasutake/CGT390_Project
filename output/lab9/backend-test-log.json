@@ -1,0 +1,117 @@
+[
+  {
+    "test": "Valid save and persistence",
+    "input": "POST {\"eventId\":\"clay-club\"}; GET",
+    "identity": "Visitor A",
+    "expected": "201; one saved ID after read",
+    "actual": {
+      "status": 201,
+      "response": {
+        "eventId": "clay-club",
+        "saved": true,
+        "ids": [
+          "clay-club"
+        ]
+      }
+    }
+  },
+  {
+    "test": "Duplicate save",
+    "input": "POST {\"eventId\":\"clay-club\"} again",
+    "identity": "Visitor A",
+    "expected": "200; still one row",
+    "actual": {
+      "status": 200,
+      "response": {
+        "eventId": "clay-club",
+        "saved": true,
+        "ids": [
+          "clay-club"
+        ]
+      }
+    }
+  },
+  {
+    "test": "Unknown event",
+    "input": "POST {\"eventId\":\"not-real\"}",
+    "identity": "Visitor A",
+    "expected": "404; list unchanged",
+    "actual": {
+      "status": 404,
+      "response": {
+        "error": "EVENT_NOT_FOUND"
+      }
+    }
+  },
+  {
+    "test": "Wrong type",
+    "input": "POST {\"eventId\":42}",
+    "identity": "Visitor A",
+    "expected": "400; list unchanged",
+    "actual": {
+      "status": 400,
+      "response": {
+        "error": "INVALID_BODY"
+      }
+    }
+  },
+  {
+    "test": "Forged identity field",
+    "input": "POST with extra visitorId field",
+    "identity": "Visitor A",
+    "expected": "400; identity must come from cookie",
+    "actual": {
+      "status": 400,
+      "response": {
+        "error": "INVALID_BODY"
+      }
+    }
+  },
+  {
+    "test": "Visitor isolation",
+    "input": "GET as B; save field-notes; DELETE clay-club as B; GET as A",
+    "identity": "Visitors A and B",
+    "expected": "B cannot remove A’s row",
+    "actual": {
+      "otherInitial": {
+        "ids": []
+      },
+      "crossDelete": {
+        "eventId": "clay-club",
+        "saved": false,
+        "ids": [
+          "field-notes"
+        ]
+      },
+      "firstAfter": {
+        "ids": [
+          "clay-club"
+        ]
+      }
+    }
+  },
+  {
+    "test": "Remove and persistence",
+    "input": "DELETE clay-club; GET",
+    "identity": "Visitor A",
+    "expected": "200; list empty after read",
+    "actual": {
+      "status": 200,
+      "response": {
+        "eventId": "clay-club",
+        "saved": false,
+        "ids": []
+      }
+    }
+  },
+  {
+    "test": "Database constraints",
+    "input": "Direct insert with nonexistent event ID",
+    "identity": "Test database client",
+    "expected": "Foreign-key rejection; database retains only B’s row",
+    "actual": {
+      "rejected": true,
+      "storedRows": 1
+    }
+  }
+]

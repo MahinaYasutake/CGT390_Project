@@ -1,46 +1,56 @@
-const events = [
-  {id:'night-market',title:'Night Market & Tiny Concerts',date:'Fri, Sep 18 · 6:30 PM',location:'Riverside Warehouse',category:'Community',color:'coral',tag:'FOOD · MUSIC',description:'An evening of local makers, warm food, and three tiny concerts tucked into a neighborhood warehouse. Come curious, leave connected.',organizer:'Riverside Neighbors',price:'Pay what you can',duration:'3 hours',audience:'All ages',materials:'Not needed',attendance:'Drop in welcome'},
-  {id:'clay-club',title:'Clay Club: Make a Useful Thing',date:'Sat, Sep 19 · 10:00 AM',location:'Morrow Art House',category:'Creative',color:'yellow',tag:'HANDS-ON',description:'A relaxed morning learning the basics of hand-building clay. You’ll leave with one useful, slightly wonky object and a new creative habit.',organizer:'Morrow Art House',price:'$18',duration:'2 hours',audience:'Beginner friendly',materials:'Included',attendance:'Save your spot before arriving'},
-  {id:'slow-sunday',title:'Slow Sunday: Stretch & Reset',date:'Sun, Sep 20 · 9:00 AM',location:'Juniper Park',category:'Wellness',color:'blue',tag:'OUTDOORS',description:'Start the week gently with an all-levels stretch, a short guided walk, and a quiet cup of tea among good company.',organizer:'Open Pace Collective',price:'$10',duration:'90 minutes',audience:'All levels',materials:'Bring a mat',attendance:'All spots welcome'},
-  {id:'future-hours',title:'Office Hours for the Future',date:'Tue, Sep 22 · 7:00 PM',location:'Online · Gatherly Rooms',category:'Online',color:'lavender',tag:'CONVERSATION',description:'A generous, low-pressure conversation about building a more humane relationship with technology and work.',organizer:'Common Thread Studio',price:'Free',duration:'1 hour',audience:'Open conversation',materials:'A device with audio',attendance:'Online room link shared later'},
-  {id:'field-notes',title:'Field Notes: A City Walk',date:'Wed, Sep 23 · 5:45 PM',location:'Meet at Bellweather Library',category:'Community',color:'blue',tag:'WALKING',description:'Notice the overlooked details of your own block on a guided walk with a photographer and a handful of friendly strangers.',organizer:'Bellweather Library',price:'Free',duration:'2 hours',audience:'All walking levels',materials:'Comfortable shoes',attendance:'Meet at the library entrance'},
-  {id:'poster-lab',title:'Poster Lab for Beginners',date:'Thu, Sep 24 · 6:00 PM',location:'The Print Pantry',category:'Creative',color:'yellow',tag:'DESIGN',description:'Make a bold one-color poster using paper, ink, and a few simple composition tricks. No design experience required.',organizer:'The Print Pantry',price:'$22',duration:'2 hours',audience:'Beginner friendly',materials:'Included',attendance:'Save your spot before arriving'}
-];
+import { events } from './catalog.js';
 
-const savedKey = 'gatherly-saved-events';
 const eventById = id => events.find(event => event.id === id);
 const validEventId = id => typeof id === 'string' && Boolean(eventById(id));
-
-function getSaved() {
-  // Browser storage is untrusted. Read safely without overwriting damaged data.
-  try {
-    const ids = JSON.parse(localStorage.getItem(savedKey) || '[]');
-    return Array.isArray(ids) ? [...new Set(ids.filter(validEventId))] : [];
-  } catch {
-    return [];
-  }
-}
+let savedIds = [];
+let saveBusy = false;
+const getSaved = () => savedIds;
 const isSaved = id => getSaved().includes(id);
 
-function setSaved(ids) {
-  if (!Array.isArray(ids) || !ids.every(validEventId)) {
-    return {ok: false, error: 'Invalid saved event list.'};
-  }
-  const uniqueIds = [...new Set(ids)];
+async function requestSaved(method, id) {
   try {
-    localStorage.setItem(savedKey, JSON.stringify(uniqueIds));
-    return {ok: true, ids: uniqueIds};
+    const response = await fetch(method === 'DELETE' ? `/api/saved?eventId=${encodeURIComponent(id)}` : '/api/saved', {
+      method,
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: method === 'POST' ? {'Content-Type': 'application/json'} : {},
+      body: method === 'POST' ? JSON.stringify({eventId: id}) : undefined
+    });
+    const result = await response.json();
+    if (!response.ok) return {ok: false, error: result.error === 'EVENT_NOT_FOUND' ? 'This event is not available to save.' : 'Saved events are unavailable. Please try again.'};
+    if (!Array.isArray(result.ids) || !result.ids.every(validEventId)) throw new Error('Invalid save response');
+    savedIds = result.ids;
+    return {ok: true, ...result};
   } catch {
-    return {ok: false, error: 'Could not update saved events. Browser storage may be full or unavailable. Try again.'};
+    return {ok: false, error: 'Saved events are unavailable. Please try again.'};
   }
 }
 
-function toggleSaved(id) {
+async function toggleSaved(id) {
   if (!validEventId(id)) return {ok: false, error: 'This event is not available to save.'};
-  const saved = getSaved();
-  const wasSaved = saved.includes(id);
-  const result = setSaved(wasSaved ? saved.filter(item => item !== id) : [...saved, id]);
-  return result.ok ? {...result, id, saved: !wasSaved} : result;
+  const result = await requestSaved(isSaved(id) ? 'DELETE' : 'POST', id);
+  return result.ok ? {...result, id} : result;
+}
+
+async function migrateLegacySaved() {
+  let legacy;
+  try { legacy = JSON.parse(localStorage.getItem('gatherly-saved-events') || 'null'); }
+  catch { return; }
+  if (!Array.isArray(legacy)) return;
+  for (const id of [...new Set(legacy.filter(validEventId))]) {
+    if (savedIds.includes(id)) continue;
+    const result = await requestSaved('POST', id);
+    if (!result.ok) return announceSave('Some earlier saved events could not be moved to the database. Please try again.');
+  }
+  try { localStorage.removeItem('gatherly-saved-events'); }
+  catch { /* The database is already updated; inaccessible old storage can remain. */ }
+}
+
+async function loadSaved() {
+  const result = await requestSaved('GET');
+  if (!result.ok) return announceSave(result.error);
+  await migrateLegacySaved();
+  updateSavedCount(); renderFeatured(); renderSaved(); renderExplore(); renderDetail();
 }
 
 function announceSave(message) {
@@ -112,16 +122,22 @@ function renderDetail() {
   target.innerHTML = `<a class="detail-back" href="explore.html">← Back to explore</a><div class="detail-layout"><div class="detail-image ${event.color}"><span>${event.category} · ${event.tag}</span><strong>${event.title.split(':')[0]}</strong></div><div class="detail-copy"><p class="eyebrow">${event.category}</p><h1>${event.title}</h1><p>${event.description}</p><div class="detail-facts"><p class="detail-fact"><strong>When</strong><span>${event.date}</span></p><p class="detail-fact"><strong>Where</strong><span>${event.location}</span></p><p class="detail-fact"><strong>Hosted by</strong><span>${event.organizer}</span></p></div><section class="before-you-go" aria-labelledby="before-you-go-title"><p class="eyebrow" id="before-you-go-title">Before you go</p><div class="practical-grid"><p><strong>Duration</strong><span>${event.duration}</span></p><p><strong>Good for</strong><span>${event.audience}</span></p><p><strong>Materials</strong><span>${event.materials}</span></p><p><strong>Attendance</strong><span>${event.attendance}</span></p></div></section><div class="detail-actions"><button class="button" data-save="${event.id}" aria-describedby="save-note" aria-pressed="${saved}">${saved ? '♥ Saved' : '♡ Save event'}</button><span class="muted">${event.price}</span></div><p class="save-note" id="save-note" role="status" aria-live="polite">Save this event to your shortlist. Saving does not reserve a spot.</p></div></div>`;
 }
 function renderSaved() { const target = document.querySelector('[data-saved-events]'); if (!target) return; const saved = events.filter(event => getSaved().includes(event.id)); target.innerHTML = saved.map(eventCard).join(''); document.querySelector('[data-saved-empty]').hidden = saved.length > 0; }
-document.addEventListener('click', event => {
+document.addEventListener('click', async event => {
   const button = event.target.closest('[data-save]'); if (!button) return;
-  const result = toggleSaved(button.dataset.save);
+  if (saveBusy) return;
+  saveBusy = true;
+  button.disabled = true;
+  await initialSavedLoad;
+  const result = await toggleSaved(button.dataset.save);
+  saveBusy = false;
   if (!result.ok) {
+    button.disabled = false;
     announceSave(result.error);
     return;
   }
   const selectedEvent = eventById(result.id);
   updateSavedCount(); renderFeatured(); renderSaved(); renderExplore(); renderDetail();
-  announceSave(result.saved ? 'Event saved in this browser. Saving does not reserve a spot.' : 'Event removed from your saved list.');
+  announceSave(result.saved ? 'Event saved for this browser. Saving does not reserve a spot.' : 'Event removed from your saved list.');
   trackGAEvent(result.saved ? 'event_saved' : 'event_unsaved', {
     event_id: result.id,
     event_title: selectedEvent.title,
@@ -130,3 +146,5 @@ document.addEventListener('click', event => {
 });
 document.querySelector('[data-newsletter-form]')?.addEventListener('submit', event => { event.preventDefault(); event.target.querySelector('.form-message').textContent = 'You’re on the list—see you next week.'; event.target.reset(); });
 updateSavedCount(); renderFeatured(); renderExplore(); renderDetail(); renderSaved();
+const initialSavedLoad = loadSaved();
+window.addEventListener('focus', loadSaved);

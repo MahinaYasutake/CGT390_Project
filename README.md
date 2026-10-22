@@ -1,6 +1,6 @@
 # Gatherly
 
-A CGT 390 event discovery prototype inspired by the Eventbrite workflow. Visitors browse six fictional events, search and filter the catalog, open details, and save or remove events from a browser-local shortlist.
+A CGT 390 event discovery prototype inspired by the Eventbrite workflow. Visitors browse six fictional events, search and filter the catalog, open details, and save or remove events from a shortlist.
 
 - Live prototype: https://cgt-390-project-seven.vercel.app/
 - Repository: https://github.com/MahinaYasutake/CGT390_Project
@@ -8,39 +8,44 @@ A CGT 390 event discovery prototype inspired by the Eventbrite workflow. Visitor
 
 ## Run locally
 
-Serve `event-discovery-app` with any static HTTP server, for example:
+The backend branch uses a Node API and a local SQLite-compatible database:
 
 ```sh
-python3 -m http.server 4173 --directory event-discovery-app --bind 127.0.0.1
+cd event-discovery-app
+npm install
+npm run dev
 ```
 
-Open http://127.0.0.1:4173/index.html. A file URL is not recommended for testing localStorage origin boundaries.
+Open http://localhost:4189/index.html. The local database is created at `event-discovery-app/data/gatherly.db` and is ignored by Git.
 
 ## Implemented lab changes
 
 - Accessible event links, visible save labels, pressed states, focus indicators, and result announcements.
 - Mobile navigation on a second row at widths up to 760px, 260px mobile detail artwork, and a sticky detail save row.
 - Local analytics queue on all four pages; Google Analytics downloads only after the first pointer or keyboard interaction.
-- Catalog ID and list type validation; safe handling of malformed browser storage; duplicate normalization; write-failure feedback; a missing-event state.
+- Server-side event ID and request-body validation, duplicate-safe database writes, API failure feedback, and a missing-event state.
 - Saving from Explore preserves search and filters without attaching duplicate filter listeners.
 - Versioned application, analytics, and stylesheet URLs to distinguish this release from older assets.
 
 ## Data and architecture boundaries
 
-The catalog is a public JavaScript array. The shortlist uses the `gatherly-saved-events` localStorage key for the current browser profile and origin. Saving does not reserve a place. There are no accounts, database writes, authentication, or save HTTP endpoints. Week 8's authenticated API, database uniqueness constraints, and transactional availability checks remain a production design proposal. Origin separation is not account authorization.
+The public catalog remains in a JavaScript array. The shortlist is stored in an SQLite-compatible `saved_events` table and accessed through `GET`, `POST`, and `DELETE /api/saved`. The API issues an anonymous, HttpOnly visitor cookie, derives the database owner from that cookie, validates IDs against its `events` table, and relies on a composite primary key to prevent duplicate saves. A foreign key protects the event relationship. On first load, the client attempts to move valid IDs from the earlier localStorage shortlist into the database, then removes the old key after successful writes. Saving does not reserve a place. This is not a signed-in account: a different browser gets a different shortlist, and losing the cookie loses access to the original list.
+
+Local development uses an on-disk database. Vercel Functions require a persistent remote libSQL/Turso database configured with server-only `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` environment variables. The branch must not replace the live prototype until those variables are set and the deployed API is tested. The live URL above still runs the earlier browser-local version until that deployment is complete.
 
 ## Verification
 
-The test scripts require Node.js and the Playwright package, plus a Playwright Chromium installation. Alternatively set `CHROME_PATH` to a Chrome executable. If Playwright lives outside this repository, set `NODE_PATH` to its containing node_modules folder.
+The new API/database integration test requires Node.js and `npm install` in `event-discovery-app`:
 
 ```sh
-node scripts/test-lab9.cjs after
-node scripts/test-mobile-analytics.cjs
-node scripts/test-deployed.cjs
+cd event-discovery-app
+npm test
 ```
 
-The scripts start and close their own local static servers, use fresh isolated browser contexts, and block third-party network requests. Ports 4188, 4189, and 4191 must be available. `test-lab9.cjs` also accepts `LAB9_APP_DIR` and `LAB9_EVIDENCE_DIR` for testing another snapshot. The historical baseline is commit `51d8641`; its original results are retained in `output/lab9/before-tests.json`.
+Its sanitized request/response log is `output/lab9/backend-test-log.json`. For the backend branch's browser checks, run `NODE_PATH=/path/to/node_modules node scripts/test-backend-ui.cjs` with Playwright and Chromium available. The test covers save/reload, two tabs, a separate visitor, and migration of the previous localStorage list. It writes `backend-ui-tests.json` and a selected screenshot under `output/lab9`.
 
-Results from October 22, 2026: 9/9 data checks and 11/11 mobile/analytics checks passed. Evidence, selected screenshots, and the Lab 9 PDF are in `output/lab9`. Third-party analytics delivery, production traffic performance, account isolation, and concurrent writes are not established by these checks. Vercel successfully deployed the merged changes. Three deployed assets matched local source, and live task flows passed at all three widths. A real classmate's additional test is still pending.
+The older `test-lab9.cjs`, `test-mobile-analytics.cjs`, and `test-deployed.cjs` scripts document the browser-local implementation at commit `a20dda2`; they are not API tests and should be run against that historical version. The original baseline results are retained in `output/lab9/before-tests.json`.
 
-The report can be regenerated with `python3 scripts/build_lab9_report.py` using the `reportlab` package. It uses installed Times New Roman font files from macOS's supplemental font directory by default; set `TIMES_NEW_ROMAN_DIR` for another font directory. All report text is black and 12-point.
+Results from October 22, 2026: the new API/database integration test and 4/4 backend UI checks passed. The earlier browser-local version passed 9/9 data checks and 11/11 mobile/analytics checks. Remote database deployment, production API behavior, real account access, and a classmate's additional test remain pending.
+
+The report can be regenerated with `python3 scripts/build_lab9_report.py` using the `reportlab` package. It uses installed Times New Roman font files from macOS's supplemental font directory by default; set `TIMES_NEW_ROMAN_DIR` for another font directory. Its double-spaced body is black 12-point type, with larger headings. The current PDF documents the earlier browser-local implementation and must be revised after the remote database deployment is verified.
