@@ -1,0 +1,177 @@
+{
+  "phase": "after",
+  "date": "2026-10-22",
+  "architecture": "Static HTML and browser localStorage; no save HTTP endpoint",
+  "tests": [
+    {
+      "id": "T1",
+      "input": "Save clay-club, reload, open Saved Events, remove, reload",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "One saved ID persists across reload; removing persists as []",
+      "actual": {
+        "saved": {
+          "stored": "[\"clay-club\"]",
+          "count": "1",
+          "button": "♥ Saved"
+        },
+        "cards": 1,
+        "removed": {
+          "stored": "[]",
+          "count": "0"
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "T2",
+      "input": "Change data-save to not-real then click; repeat with empty ID",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Reject unknown and empty IDs; raw storage unchanged; show failure",
+      "actual": {
+        "unknown": {
+          "stored": null,
+          "count": "0",
+          "button": "♡ Save event",
+          "status": "This event is not available to save."
+        },
+        "empty": {
+          "stored": null,
+          "count": "0",
+          "button": "♡ Save event",
+          "status": "This event is not available to save."
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "T3",
+      "input": "Save at port 4189; visit same app at port 4191; return to 4189",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Different origin starts empty; original origin retains clay-club",
+      "actual": {
+        "other": {
+          "stored": null,
+          "count": "0"
+        },
+        "cards": 0,
+        "original": {
+          "stored": "[\"clay-club\"]",
+          "count": "1",
+          "button": "♥ Saved"
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "T4",
+      "input": "Set stored value to {broken then reload",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Page renders without uncaught error; count 0; raw value unchanged",
+      "actual": {
+        "stored": "{broken",
+        "count": "0",
+        "button": "♡ Save event",
+        "pageErrors": []
+      },
+      "pass": true
+    },
+    {
+      "id": "T5",
+      "input": "Seed object {id:clay-club} and then null; reload each",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Both wrong JSON shapes render safely as empty; no uncaught error",
+      "actual": {
+        "values": [
+          {
+            "stored": "{\"id\":\"clay-club\"}",
+            "count": "0",
+            "button": "♡ Save event"
+          },
+          {
+            "stored": "null",
+            "count": "0",
+            "button": "♡ Save event"
+          }
+        ],
+        "pageErrors": []
+      },
+      "pass": true
+    },
+    {
+      "id": "T6",
+      "input": "Seed [clay-club,clay-club,not-real,7]; reload then save poster-lab",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Display one valid save; next successful write stores unique known IDs only",
+      "actual": {
+        "read": {
+          "stored": "[\"clay-club\",\"clay-club\",\"not-real\",7]",
+          "count": "1",
+          "button": "♥ Saved"
+        },
+        "write": {
+          "stored": "[\"clay-club\",\"poster-lab\"]",
+          "count": "2",
+          "button": "♥ Saved",
+          "status": "Event saved in this browser. Saving does not reserve a spot."
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "T7",
+      "input": "Make Storage.prototype.setItem throw QuotaExceededError then click Save",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "No false success; stored value unchanged; visible error; no uncaught error",
+      "actual": {
+        "stored": null,
+        "count": "0",
+        "button": "♡ Save event",
+        "status": "Could not update saved events. Browser storage may be full or unavailable. Try again.",
+        "pageErrors": []
+      },
+      "pass": true
+    },
+    {
+      "id": "T8",
+      "input": "Open event.html?id=not-real",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Show Event not found and no save button; do not silently substitute another event",
+      "actual": {
+        "httpStatus": 200,
+        "heading": "Event not found",
+        "saveButtons": 0,
+        "stored": null
+      },
+      "pass": true
+    },
+    {
+      "id": "T9",
+      "input": "Call setSaved with an object, a mixed-type list, then duplicate valid IDs; call toggleSaved with an object",
+      "identity": "Anonymous visitor in isolated test browser context",
+      "expected": "Reject invalid types without mutation; deduplicate valid write; return explicit results",
+      "actual": {
+        "object": {
+          "ok": false,
+          "error": "Invalid saved event list."
+        },
+        "mixed": {
+          "ok": false,
+          "error": "Invalid saved event list."
+        },
+        "rejectedStorage": null,
+        "valid": {
+          "ok": true,
+          "ids": [
+            "clay-club"
+          ]
+        },
+        "invalidToggle": {
+          "ok": false,
+          "error": "This event is not available to save."
+        },
+        "finalStorage": "[\"clay-club\"]"
+      },
+      "pass": true
+    }
+  ]
+}
