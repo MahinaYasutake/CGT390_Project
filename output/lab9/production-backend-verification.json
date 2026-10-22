@@ -1,0 +1,83 @@
+{
+  "url": "https://cgt-390-project-seven.vercel.app/api/saved",
+  "deployment_commit": "68cfc8ecfe7d78f1cc72027d9b8304a9c5f54a2a",
+  "checked_at": "2026-10-22",
+  "tests": {
+    "A_before": {
+      "status": 200,
+      "body": {
+        "ids": []
+      }
+    },
+    "A_save": {
+      "status": 201,
+      "body": {
+        "eventId": "clay-club",
+        "saved": true,
+        "ids": [
+          "clay-club"
+        ]
+      }
+    },
+    "A_duplicate": {
+      "status": 200,
+      "body": {
+        "eventId": "clay-club",
+        "saved": true,
+        "ids": [
+          "clay-club"
+        ]
+      }
+    },
+    "A_bad_type": {
+      "status": 400,
+      "body": {
+        "error": "INVALID_BODY"
+      }
+    },
+    "A_unknown": {
+      "status": 404,
+      "body": {
+        "error": "EVENT_NOT_FOUND"
+      }
+    },
+    "B_before": {
+      "status": 200,
+      "body": {
+        "ids": []
+      }
+    },
+    "B_delete": {
+      "status": 200,
+      "body": {
+        "eventId": "clay-club",
+        "saved": false,
+        "ids": []
+      }
+    },
+    "A_after_B_delete": {
+      "status": 200,
+      "body": {
+        "ids": [
+          "clay-club"
+        ]
+      }
+    },
+    "A_delete_cleanup": {
+      "status": 200,
+      "body": {
+        "eventId": "clay-club",
+        "saved": false,
+        "ids": []
+      }
+    },
+    "A_after_cleanup": {
+      "status": 200,
+      "body": {
+        "ids": []
+      }
+    }
+  },
+  "result": "passed",
+  "note": "Cookie values omitted; test row removed."
+}
