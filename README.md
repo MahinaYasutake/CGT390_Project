@@ -36,8 +36,9 @@ The test scripts require Node.js and the Playwright package, plus a Playwright C
 ```sh
 node scripts/test-lab9.cjs after
 node scripts/test-mobile-analytics.cjs
+node scripts/test-deployed.cjs
 ```
 
 The scripts start and close their own local static servers, use fresh isolated browser contexts, and block third-party network requests. Ports 4188, 4189, and 4191 must be available. `test-lab9.cjs` also accepts `LAB9_APP_DIR` and `LAB9_EVIDENCE_DIR` for testing another snapshot. The historical baseline is commit `51d8641`; its original results are retained in `output/lab9/before-tests.json`.
 
-Results from October 22, 2026: 9/9 data checks and 11/11 mobile/analytics checks passed. Evidence, selected screenshots, and the Lab 9 PDF are in `output/lab9`. Third-party analytics delivery, production traffic performance, account isolation, and concurrent writes are not established by these checks. A real classmate's additional test is still pending.
+Results from October 22, 2026: 9/9 data checks and 11/11 mobile/analytics checks passed. Evidence, selected screenshots, and the Lab 9 PDF are in `output/lab9`. Third-party analytics delivery, production traffic performance, account isolation, and concurrent writes are not established by these checks. Vercel successfully deployed the merged changes. Three deployed assets matched local source, and live task flows passed at all three widths. A real classmate's additional test is still pending.

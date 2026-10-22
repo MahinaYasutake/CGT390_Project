@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-22",
+  "origin": "https://cgt-390-project-seven.vercel.app",
+  "assets": [
+    {
+      "file": "app.js",
+      "status": 200,
+      "matchesLocal": true
+    },
+    {
+      "file": "analytics.js",
+      "status": 200,
+      "matchesLocal": true
+    },
+    {
+      "file": "styles.css",
+      "status": 200,
+      "matchesLocal": true
+    }
+  ],
+  "flows": [
+    {
+      "width": 390,
+      "expected": "Live discovery, filter preservation, save persistence, remove persistence, missing-record handling, no horizontal overflow or JavaScript page errors; deferred analytics before interaction; mobile artwork and sticky controls",
+      "pass": true,
+      "pageErrors": []
+    },
+    {
+      "width": 768,
+      "expected": "Live discovery, filter preservation, save persistence, remove persistence, missing-record handling, no horizontal overflow or JavaScript page errors; deferred analytics before interaction; mobile artwork and sticky controls",
+      "pass": true,
+      "pageErrors": []
+    },
+    {
+      "width": 1100,
+      "expected": "Live discovery, filter preservation, save persistence, remove persistence, missing-record handling, no horizontal overflow or JavaScript page errors; deferred analytics before interaction; mobile artwork and sticky controls",
+      "pass": true,
+      "pageErrors": []
+    }
+  ],
+  "note": "Isolated anonymous browser contexts; third-party delivery blocked; all saved records are fictional"
+}
