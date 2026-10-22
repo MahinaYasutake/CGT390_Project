@@ -37,3 +37,12 @@
 .save-button.saved{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 0 0 3px rgba(32,35,43,.16)}
 .results-bar [role="status"]{font-weight:800;color:var(--ink)}
 .detail-actions .button[aria-pressed="true"]{background:var(--ink);box-shadow:0 0 0 4px rgba(32,35,43,.16);min-width:122px}
+
+/* Lab 7 mobile layout and reachable detail action restored in Lab 9. */
+@media(max-width:760px){
+  .site-header{flex-wrap:wrap;row-gap:14px}
+  .site-header .brand,.main-nav{flex-basis:100%}
+  .main-nav{justify-content:space-between;flex-wrap:wrap}
+  .detail-image{height:260px;margin-bottom:28px}
+  .detail-actions{position:sticky;bottom:12px;z-index:10;padding:12px;background:var(--cream);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+}

@@ -6,9 +6,9 @@ This file is the running record for the case-study baseline. It is intentionally
 
 - Current phase: 2 — baseline implementation and local testing
 - Reference site: [Eventbrite](https://www.eventbrite.com/)
-- Application status: Not started
-- GitHub repository: TBD
-- Vercel deployment: TBD
+- Application status: Working static Gatherly prototype with browser-local saving
+- GitHub repository: https://github.com/MahinaYasutake/CGT390_Project
+- Vercel deployment: https://cgt-390-project-seven.vercel.app/
 
 ## Professor's required workflow
 
@@ -124,11 +124,19 @@ Tested 2026-08-27 at `https://cgt-390-project-seven.vercel.app`:
 
 ## Missing, simulated, broken, or uncertain
 
-- Current application is not implemented yet.
-- Save behavior is planned as browser-local simulation, not a real account-backed feature.
-- Event data is planned as fictional sample content.
-- GitHub and Vercel URLs are not available yet.
+- The static prototype is implemented; account-backed and reservation features are not implemented.
+- Save behavior is implemented with browser localStorage, not an account-backed service.
+- Event data consists of six fictional sample records.
+- Current GitHub and Vercel URLs appear in the project status above.
 
 ## Reflection draft
 
 AI handled the initial page structure, fictional sample content, shared event rendering, and the search/filter/save interactions successfully. Human direction was needed to keep the scope limited, require original styling, choose browser-local storage instead of accounts, and reject the glassmorphism experiment when it did not feel warm enough. The baseline is deployed and working, but saved events are only stored in the current browser and there is no real registration, account, or server-side event data yet.
+
+## October 22 2026 Lab 9 update
+
+Reviewed the submitted Week 7 and Week 8 reports and the September 22 GitHub baseline. Existing local accessibility changes were preserved before new work. Restored the Week 7 mobile navigation, shortened detail artwork, sticky save row, and deferred analytics behavior that was documented but absent from that baseline. Added Lab 9 validation and storage-failure handling, missing-event feedback, and search/filter preservation after saving.
+
+The test evidence records 2/8 historical baseline checks passing, then 9/9 data checks and 11/11 responsive/analytics checks passing. Checks include 390px, 768px, and 1100px flows, reload persistence, rejection without storage mutation, and pointer/keyboard analytics loading. Test scripts and selected evidence are committed with the prototype. See README.md and output/lab9.
+
+Week 8 server components remain proposed architecture. Peer testing has not yet occurred. External analytics delivery and concurrent account/database behavior have not been tested.

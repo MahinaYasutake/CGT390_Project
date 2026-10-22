@@ -68,8 +68,10 @@ function eventCard(event) {
 
 function updateSavedCount() { document.querySelectorAll('.saved-count').forEach(node => node.textContent = getSaved().length); }
 function renderFeatured() { const target = document.querySelector('[data-featured-events]'); if (target) target.innerHTML = events.slice(0, 3).map(eventCard).join(''); }
+let refreshExplore;
 function renderExplore() {
   const list = document.querySelector('[data-event-list]'); if (!list) return;
+  if (refreshExplore) { refreshExplore(); return; }
   let filters = {category:'All', date:'All', location:'All', price:'All'}; let query = '';
   const isWeekend = event => ['Fri, Sep 18', 'Sat, Sep 19', 'Sun, Sep 20'].includes(event.date.split(' · ')[0]);
   const draw = () => {
@@ -91,6 +93,7 @@ function renderExplore() {
   }));
   document.querySelectorAll('[data-filter]').forEach(item => item.setAttribute('aria-pressed', String(item.classList.contains('active'))));
   draw();
+  refreshExplore = draw;
   document.querySelector('[data-reset-filters]').addEventListener('click', () => {
     filters = {category:'All', date:'All', location:'All', price:'All'}; query = '';
     document.querySelector('[data-search]').value = '';
