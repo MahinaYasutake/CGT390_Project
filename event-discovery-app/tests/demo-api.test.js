@@ -1,0 +1,31 @@
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import assert from 'node:assert/strict';
+process.env.TURSO_DATABASE_URL = `file:${join(mkdtempSync(join(tmpdir(), 'gatherly-api-')), 'test.db')}`;
+const { handle } = await import(new URL('../api/_core.js', import.meta.url));
+let session = '';
+async function call(route, method='GET', body, id) {
+  const req = {method, url:'/api/'+route, query:{id}, headers:{host:'gatherly.example', origin:method==='GET' ? undefined : 'https://gatherly.example', cookie:session, 'content-type':'application/json'}, body};
+  const res = {statusCode:200, headers:{}, setHeader(k,v){this.headers[k.toLowerCase()]=v}, end(v){this.value=JSON.parse(v)}};
+  await handle(req,res,route);
+  if (res.headers['set-cookie'] && !res.headers['set-cookie'].includes('Max-Age=0')) session=res.headers['set-cookie'].split(';')[0];
+  return {status:res.statusCode, ...res.value};
+}
+let r=await call('auth/signup','POST',{email:'preview-check@example.test',password:'fictional-long-password'}); assert.equal(r.status,201);
+r=await call('auth/me'); assert.equal(r.account.email,'preview-check@example.test');
+r=await call('me/saved','PUT',{ids:['night-market']}); assert.deepEqual(r.ids,['night-market']);
+r=await call('me/saved'); assert.deepEqual(r.ids,['night-market']);
+r=await call('events/availability','GET',undefined,'night-market'); assert.equal(r.remaining,24);
+r=await call('registrations','POST',{eventId:'night-market',name:'Demo Guest'}); assert.equal(r.status,201); const reservationId=r.registrationId;
+r=await call('registrations','POST',{eventId:'night-market',name:'Demo Guest'}); assert.equal(r.status,409);
+r=await call('events/availability','GET',undefined,'night-market'); assert.equal(r.remaining,23);
+r=await call('me/registrations'); assert.equal(r.data[0].id,reservationId);
+r=await call('registrations/cancel','DELETE',undefined,reservationId); assert.equal(r.status,200);
+r=await call('events/availability','GET',undefined,'night-market'); assert.equal(r.remaining,24);
+r=await call('newsletter','POST',{email:'news@example.test'}); assert.equal(r.status,200);
+r=await call('auth/logout','POST'); assert.equal(r.status,200); session='';
+r=await call('me/registrations'); assert.equal(r.status,401);
+r=await call('auth/login','POST',{email:'preview-check@example.test',password:'fictional-long-password'}); assert.equal(r.status,200);
+r=await call('me/saved'); assert.deepEqual(r.ids,['night-market']);
+console.log('Hosted API flow passed: signup, sign-in, saved, reservation, duplicate, cancel, newsletter, sign-out, authorization');
