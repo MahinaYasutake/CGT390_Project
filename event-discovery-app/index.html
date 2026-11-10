@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Gatherly helps you discover memorable local and online events.">
   <title>Gatherly | Discover your next favorite thing</title>
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=13">
   <script src="analytics.js?v=9"></script>
 </head>
 <body>
@@ -14,6 +14,7 @@
     <nav class="main-nav" aria-label="Main navigation">
       <a href="explore.html">Explore</a>
       <a href="saved.html">Saved <span class="saved-count" aria-label="saved events count">0</span></a>
+      <a href="account.html">Account</a>
       <a class="button button-small" href="explore.html">Find an event</a>
     </nav>
   </header>
@@ -40,11 +41,11 @@
     </section>
 
     <section class="newsletter shell">
-      <div><p class="eyebrow">Stay in the loop</p><h2>One good idea,<br>delivered weekly.</h2></div>
-      <form class="newsletter-form" data-newsletter-form><label for="email">Your email</label><div class="input-row"><input id="email" name="email" type="email" placeholder="you@example.com" required><button class="button" type="submit">Sign me up</button></div><p class="form-message" role="status"></p></form>
+      <div><p class="eyebrow">Stay in the loop</p><h2>Preview the<br>newsletter signup.</h2></div>
+      <form class="newsletter-form" data-newsletter-form><label for="email">Fictional email for the demo</label><div class="input-row"><input id="email" name="email" type="email" placeholder="you@example.test" autocomplete="email" required><button class="button" type="submit">Try signup</button></div><p class="form-message" role="status">Demo only. No email will be sent.</p></form>
     </section>
   </main>
   <footer class="site-footer shell"><span>© 2026 Gatherly</span><span>Made for finding your people.</span></footer>
-  <script type="module" src="app.js?v=10"></script>
+  <script src="app.js?v=13"></script>
 </body>
 </html>

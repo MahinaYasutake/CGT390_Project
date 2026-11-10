@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Fictional local Gatherly accounts for the classroom demo.">
+  <title>Account | Gatherly</title>
+  <link rel="stylesheet" href="styles.css?v=13">
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">✦</span> Gatherly</a><nav class="main-nav" aria-label="Main navigation"><a href="explore.html">Explore</a><a href="saved.html">Saved <span class="saved-count">0</span></a><a class="active" href="account.html">Account</a><a class="button button-small" href="explore.html">Find an event</a></nav></header>
+  <main class="shell page-main account-page" data-account-page>
+    <div class="page-intro"><p class="eyebrow">Your Gatherly plans</p><h1>Account</h1><p>Use a fictional account to save events and manage reservations in this classroom demo.</p></div>
+    <p class="account-notice">Use a made-up <strong>.test</strong> email and a password you do not use anywhere else. Creating an account signs you in immediately. No email, payment, or real event booking is created.</p>
+    <div data-auth-guest hidden class="account-grid">
+      <section class="account-card" aria-labelledby="signup-heading"><h2 id="signup-heading">Create a demo account</h2><form data-auth-form="signup"><label>Fictional email<input type="email" name="email" placeholder="you@example.test" autocomplete="off" required></label><label>Made-up password<input type="password" name="password" minlength="10" maxlength="128" autocomplete="new-password" data-password-input required></label><label>Confirm password<input type="password" name="confirmPassword" minlength="10" maxlength="128" autocomplete="new-password" data-password-input required></label><label class="password-toggle"><input type="checkbox" data-show-password> Show passwords</label><button class="button" type="submit">Create account</button></form></section>
+      <section class="account-card" aria-labelledby="signin-heading"><h2 id="signin-heading">Sign in</h2><form data-auth-form="login"><label>Fictional email<input type="email" name="email" placeholder="you@example.test" autocomplete="off" required></label><label>Password<input type="password" name="password" autocomplete="current-password" data-password-input required></label><label class="password-toggle"><input type="checkbox" data-show-password> Show password</label><button class="button" type="submit">Sign in</button></form><p class="account-help">Use the same fictional email and password you created. If you forgot this demo password, create a new account with a different <strong>.test</strong> email.</p></section>
+    </div>
+    <section data-auth-user hidden class="account-card"><h2>Signed in</h2><p>Your demo account is <strong data-account-email></strong>.</p><p>Your account shortlist and reservations are available on the <a href="saved.html">Saved page</a>. Guest saves on this browser stay separate.</p><button class="cancel-registration" type="button" data-signout>Sign out</button></section>
+    <p data-auth-unavailable hidden>Accounts are available when the Gatherly demo service is available.</p>
+    <p role="status" aria-live="polite" data-auth-status></p>
+  </main>
+  <footer class="site-footer shell"><span>© 2026 Gatherly</span><span>Fictional accounts for a demo.</span></footer><script src="app.js?v=13"></script>
+</body>
+</html>
